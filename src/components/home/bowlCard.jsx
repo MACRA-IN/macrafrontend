@@ -1,12 +1,38 @@
-import { Plus } from "lucide-react";
+import { useState } from "react";
+import { Plus, Minus, Loader2 } from "lucide-react";
+import { useCart } from "../../context/cartContext";
 
 export default function BowlCard({ bowl }) {
+  const { cartItems, addToCart, updateCartItem } = useCart();
+  const [addLoading, setAddLoading] = useState(false);
+  const [qtyLoading, setQtyLoading] = useState(false);
+
+  const cartItem = cartItems.find((i) => i.product_id === bowl.id);
+  const quantity = cartItem?.quantity ?? 0;
+
+  async function handleAdd() {
+    setAddLoading(true);
+    await addToCart(bowl.id, 1);
+    setAddLoading(false);
+  }
+
+  async function handleIncrement() {
+    setQtyLoading(true);
+    await addToCart(bowl.id, 1);
+    setQtyLoading(false);
+  }
+
+  async function handleDecrement() {
+    setQtyLoading(true);
+    await updateCartItem(bowl.id, quantity - 1);
+    setQtyLoading(false);
+  }
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-sage bg-white shadow-card">
+    <div className="overflow-hidden rounded-2xl border border-sage bg-white shadow-card">
       {/* Image */}
       <div
-        className="relative flex h-52 w-full items-center justify-center sm:h-56"
+        className="flex h-56 w-full items-center justify-center"
         style={{
           backgroundColor: "#C6E8D4",
           backgroundImage:
@@ -22,39 +48,56 @@ export default function BowlCard({ bowl }) {
         )}
       </div>
 
-      <div className="p-5 sm:p-6">
+      <div className="p-5">
         <h3 className="font-heading text-xl font-bold text-forest">{bowl.name}</h3>
 
-        {/* Macros */}
-        <div className="mt-3 grid grid-cols-4 gap-2 rounded-2xl bg-sage/30 p-3 text-center">
-          <div>
-            <p className="font-heading text-sm font-bold text-forest">{bowl.calories}</p>
-            <p className="text-xs text-text-muted">kcal</p>
-          </div>
-          <div>
-            <p className="font-heading text-sm font-bold text-forest">{parseFloat(bowl.protein_g).toFixed(0)}g</p>
-            <p className="text-xs text-text-muted">protein</p>
-          </div>
-          <div>
-            <p className="font-heading text-sm font-bold text-forest">{parseFloat(bowl.carbs_g).toFixed(0)}g</p>
-            <p className="text-xs text-text-muted">carbs</p>
-          </div>
-          <div>
-            <p className="font-heading text-sm font-bold text-forest">{parseFloat(bowl.fat_g).toFixed(0)}g</p>
-            <p className="text-xs text-text-muted">fat</p>
-          </div>
+        <div className="mt-3 space-y-1">
+          {bowl.description && (
+            <p className="text-sm text-text-muted">{bowl.description}</p>
+          )}
+          <p className="text-sm text-text-muted">
+            {bowl.calories} kcal · {parseFloat(bowl.protein_g).toFixed(0)}g protein · {parseFloat(bowl.fiber_g).toFixed(0)}g fiber
+          </p>
         </div>
 
-        <p className="mt-2 text-xs text-text-muted">
-          🌾 {parseFloat(bowl.fiber_g).toFixed(0)}g fiber
-        </p>
+        <div className="mt-4 flex items-center justify-between border-t border-sage pt-4">
+          <span className="font-heading text-2xl font-bold text-forest">
+            ₹{parseFloat(bowl.price).toFixed(0)}
+          </span>
 
-        <div className="mt-4 flex items-center justify-between">
-          <span className="font-heading text-2xl font-bold text-forest">₹{parseFloat(bowl.price).toFixed(0)}</span>
-
-          <button className="flex items-center gap-1.5 rounded-full border border-sage px-5 py-2 font-heading text-sm font-semibold text-emerald-dark transition-all hover:bg-sage">
-            <Plus size={14} /> Add to box
-          </button>
+          {quantity === 0 ? (
+            <button
+              onClick={handleAdd}
+              disabled={addLoading}
+              className="flex min-w-28 items-center justify-center rounded-full border border-sage px-5 py-2 font-heading text-sm font-semibold text-emerald-dark transition-all hover:bg-sage disabled:opacity-60"
+            >
+              {addLoading ? <Loader2 size={15} className="animate-spin" /> : "Add to box"}
+            </button>
+          ) : (
+            <div className="flex items-center gap-2 rounded-full border border-sage px-2 py-1">
+              <button
+                onClick={handleDecrement}
+                disabled={qtyLoading}
+                className="flex h-7 w-7 items-center justify-center rounded-full text-emerald-dark transition-all hover:bg-sage disabled:opacity-50"
+              >
+                <Minus size={14} />
+              </button>
+              <span className="min-w-5 text-center font-heading text-sm font-bold text-forest">
+                {qtyLoading ? (
+                  <Loader2 size={13} className="mx-auto animate-spin" />
+                ) : (
+                  quantity
+                )}
+              </span>
+              <button
+                onClick={handleIncrement}
+                disabled={qtyLoading}
+                className="flex h-7 w-7 items-center justify-center rounded-full text-emerald-dark transition-all hover:bg-sage disabled:opacity-50"
+              >
+                <Plus size={14} />
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

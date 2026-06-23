@@ -2,10 +2,12 @@ import { useState } from "react";
 import { ShoppingBag, Menu, X, LogOut, User } from "lucide-react";
 import snakLogo from "../../assets/logo/Macra.png";
 import { useAuth } from "../../context/authContext";
+import { useCart } from "../../context/cartContext";
 import AuthModal from "../auth/authModal";
 
 export default function Header() {
   const { user, logoutUser } = useAuth();
+  const { cartCount, openCart, clearCart } = useCart();
   const [navOpen, setNavOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
 
@@ -40,7 +42,7 @@ export default function Header() {
                   <User size={15} /> {user.name ?? user.email}
                 </span>
                 <button
-                  onClick={logoutUser}
+                  onClick={() => { clearCart(); logoutUser(); }}
                   className="hidden items-center gap-1.5 rounded-full border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 md:flex"
                 >
                   <LogOut size={14} /> Log out
@@ -56,8 +58,14 @@ export default function Header() {
             )}
 
             {/* Cart button */}
-            <button className="relative flex items-center gap-1.5 rounded-full border border-gray-200 px-4 py-2 text-sm transition-colors hover:bg-gray-50">
+            <button
+              onClick={openCart}
+              className="flex items-center gap-2 rounded-full border border-gray-200 px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-50"
+            >
               <ShoppingBag size={16} strokeWidth={2} className="text-forest" />
+              <span className="font-heading text-sm font-semibold text-forest">
+                {cartCount}
+              </span>
             </button>
 
             {/* Preorder */}
@@ -95,7 +103,7 @@ export default function Header() {
               ))}
               {user ? (
                 <button
-                  onClick={() => { logoutUser(); setNavOpen(false); }}
+                  onClick={() => { clearCart(); logoutUser(); setNavOpen(false); }}
                   className="mt-1 rounded-xl px-4 py-3 text-left text-sm font-medium text-gray-700 transition-colors hover:bg-sage/40"
                 >
                   Log out ({user.name ?? user.email})
