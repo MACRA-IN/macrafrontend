@@ -62,7 +62,7 @@ const pwStrength = (pw) => [
 ];
 
 /* ─── Main component ─── */
-export default function AuthModal({ onClose }) {
+export default function AuthModal({ onClose, onSuccess }) {
   const { loginUser } = useAuth();
 
   const [tab,         setTab]         = useState("login");
@@ -121,6 +121,7 @@ export default function AuthModal({ onClose }) {
       }
       loginUser(data.token, data.customer ?? data.user ?? { email: form.email });
       onClose();
+      onSuccess?.();
     } catch (err) {
       setApiError(
         err?.response?.data?.message ||
@@ -165,7 +166,7 @@ export default function AuthModal({ onClose }) {
           </h2>
           <p className="mt-1 text-sm text-text-muted">
             {isLogin
-              ? "Log in to manage your Snak orders."
+              ? "Log in to manage your Macra subscription."
               : "Join the founding batch and get early access."}
           </p>
 

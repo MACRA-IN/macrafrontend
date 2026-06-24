@@ -3,17 +3,31 @@ import apiClient from "../utils/apiClient";
 export const getPlans = async () => {
   try {
     const res = await apiClient.get("api/subscription/plans");
-    return res.data.data;
+    return res.data.data.plans;
+  } catch (err) {
+    console.error("getPlans error:", err);
+    return null;
+  }
+};
+export const getPublicPlans = async () => {
+  try {
+    const res = await apiClient.get("api/subscription/plans/public");
+    return res.data;
   } catch (err) {
     console.error("getPlans error:", err);
     return null;
   }
 };
 
+
 export const calculatePrice = async (categoryId, planId, slotsPerDay) => {
   try {
     const res = await apiClient.get("/api/subscription/calculate-price", {
-      params: { category_id: categoryId, plan_id: planId, slotsPerDay: slotsPerDay },
+      params: {
+        category_id: categoryId,
+        plan_id: planId,
+        slotsPerDay: slotsPerDay,
+      },
     });
     return res.data.data;
   } catch (err) {
@@ -22,7 +36,17 @@ export const calculatePrice = async (categoryId, planId, slotsPerDay) => {
   }
 };
 
-export const createSubscription = async ({ category_id, plan_id, plan_price, slots }) => {
+export const fillMealPlanner = async (slots) => {
+  const res = await apiClient.post("/api/subscription/meal-planner/fill", { slots });
+  return res.data;
+};
+
+export const createSubscription = async ({
+  category_id,
+  plan_id,
+  plan_price,
+  slots,
+}) => {
   const res = await apiClient.post("/api/subscription/create", {
     category_id,
     plan_id,
@@ -32,8 +56,19 @@ export const createSubscription = async ({ category_id, plan_id, plan_price, slo
   return res.data;
 };
 
+export const getMySubscription = async () => {
+  try {
+    const sub = await apiClient.get("/api/subscription");
+    return sub.data.data;
+  } catch (error) {
+    console.error("getMySubscription error:", error);
+    return null;
+  }
+};
+
 export default {
   getPlans,
   calculatePrice,
+  fillMealPlanner,
   createSubscription,
 };

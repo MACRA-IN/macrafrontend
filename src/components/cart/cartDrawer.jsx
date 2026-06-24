@@ -1,44 +1,37 @@
 import { useEffect, useState } from "react";
-import { X, Minus, Plus, Loader2 } from "lucide-react";
+import { X, Minus, Plus, Loader2, ShoppingBag } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useCart } from "../../context/cartContext";
 
 const SLOTS = [
-  { id: "morning", label: "Morning", sub: "8–11 AM" },
-  { id: "afternoon", label: "Afternoon", sub: "12–3 PM" },
-  { id: "evening", label: "Evening", sub: "6–9 PM" },
+  { id: "morning",   label: "Morning",   sub: "8–11 AM"  },
+  { id: "afternoon", label: "Afternoon", sub: "12–3 PM"  },
+  { id: "evening",   label: "Evening",   sub: "6–9 PM"   },
 ];
 
 function planSubLabel(plan) {
-  if (plan.is_trial) return "Free trial";
+  if (plan.is_trial)              return "Free trial";
   if (plan.discount_percentage > 0) return `Save ${plan.discount_percentage}%`;
   return `${plan.duration_days} days`;
 }
 
 export default function CartDrawer() {
+  const navigate = useNavigate();
   const {
-    isCartOpen,
-    closeCart,
-    cartItems,
-    totals,
-    addToCart,
-    updateCartItem,
-    fetchCart,
-    subscriptionPlans,
-    selectedPlan,
-    selectPlanOnCart,
-    selectedSlot,
-    setSelectedSlot,
+    isCartOpen, closeCart,
+    cartItems, totals,
+    addToCart, updateCartItem, fetchCart,
+    subscriptionPlans, selectedPlan, selectPlanOnCart,
+    selectedSlot, setSelectedSlot,
   } = useCart();
 
   const [actionLoading, setActionLoading] = useState({});
-  const [planLoading, setPlanLoading] = useState(false);
+  const [planLoading, setPlanLoading]     = useState(false);
 
-  // Fetch cart (and subscription plans) whenever the drawer opens
   useEffect(() => {
     if (isCartOpen) fetchCart();
   }, [isCartOpen, fetchCart]);
 
-  // Lock body scroll while drawer is open
   useEffect(() => {
     document.body.style.overflow = isCartOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
@@ -69,7 +62,14 @@ export default function CartDrawer() {
     setPlanLoading(false);
   }
 
+  function handleCheckout() {
+    closeCart();
+    navigate("/cart");
+  }
+
   if (!isCartOpen) return null;
+
+  const total = parseFloat(totals?.total_amount ?? 0).toFixed(0);
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
@@ -82,9 +82,12 @@ export default function CartDrawer() {
       {/* Panel */}
       <div className="relative flex h-full w-full flex-col bg-white shadow-2xl sm:w-[420px]">
 
-        {/* ── Header ── */}
-        <div className="flex items-center justify-between px-5 py-5">
-          <h2 className="font-heading text-2xl font-bold text-forest">Your box</h2>
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-sage px-5 py-4">
+          <div className="flex items-center gap-2">
+            <ShoppingBag size={18} className="text-forest" />
+            <h2 className="font-heading text-xl font-bold text-forest">Your box</h2>
+          </div>
           <button
             onClick={closeCart}
             className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 text-text-muted transition-colors hover:bg-gray-50"
@@ -93,13 +96,17 @@ export default function CartDrawer() {
           </button>
         </div>
 
-        {/* ── Scrollable body ── */}
+        {/* Scrollable body */}
         <div className="flex-1 overflow-y-auto px-5 pb-4">
 
           {cartItems.length === 0 ? (
-            <p className="py-10 text-center text-sm text-text-muted">
-              No items yet. Add some bowls!
-            </p>
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-sage/40">
+                <ShoppingBag size={28} strokeWidth={1.5} className="text-text-muted" />
+              </div>
+              <p className="mt-4 font-heading text-sm font-semibold text-forest">Your box is empty</p>
+              <p className="mt-1 text-xs text-text-muted">Add bowls from the menu to get started.</p>
+            </div>
           ) : (
             <div className="flex flex-col divide-y divide-sage">
               {cartItems.map((item) => (
@@ -133,9 +140,7 @@ export default function CartDrawer() {
                         ₹{parseFloat(item.total_price).toFixed(0)}
                       </p>
                     </div>
-
                     <p className="text-xs text-text-muted">₹{parseFloat(item.unit_price).toFixed(0)} each</p>
-
                     <div className="flex items-center justify-between">
                       {/* Qty controls */}
                       <div className="flex items-center gap-2 rounded-full border border-sage px-2 py-0.5">
@@ -161,8 +166,6 @@ export default function CartDrawer() {
                           <Plus size={12} />
                         </button>
                       </div>
-
-                      {/* Remove */}
                       <button
                         onClick={() => handleRemove(item.product_id)}
                         disabled={!!actionLoading[item.product_id]}
@@ -177,12 +180,10 @@ export default function CartDrawer() {
             </div>
           )}
 
-          {/* ── Plan selector ── */}
+          {/* Plan selector */}
           {subscriptionPlans.length > 0 && (
             <div className="mt-5">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-text-muted">
-                Plan
-              </p>
+              <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-text-muted">Plan</p>
               <div className="grid grid-cols-3 gap-2">
                 {subscriptionPlans.map((plan) => (
                   <button
@@ -205,11 +206,9 @@ export default function CartDrawer() {
             </div>
           )}
 
-          {/* ── Delivery Slot ── */}
+          {/* Delivery slot */}
           <div className="mt-5">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-text-muted">
-              Delivery Slot
-            </p>
+            <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-text-muted">Delivery Slot</p>
             <div className="grid grid-cols-3 gap-2">
               {SLOTS.map((slot) => (
                 <button
@@ -231,7 +230,7 @@ export default function CartDrawer() {
           </div>
         </div>
 
-        {/* ── Fixed footer ── */}
+        {/* Fixed footer */}
         <div className="border-t border-sage px-5 pb-6 pt-4">
           <div className="mb-3 flex flex-col gap-1.5 text-sm">
             {totals?.duration_days > 1 ? (
@@ -251,18 +250,14 @@ export default function CartDrawer() {
                 </span>
               </div>
             )}
-
             {totals?.discount_amount > 0 && (
               <div className="flex items-center justify-between">
-                <span className="text-text-muted">
-                  Discount ({totals.discount_percent}%)
-                </span>
+                <span className="text-text-muted">Discount ({totals.discount_percent}%)</span>
                 <span className="font-semibold text-emerald-dark">
                   −₹{parseFloat(totals.discount_amount).toFixed(0)}
                 </span>
               </div>
             )}
-
             {totals?.delivery_fee > 0 && (
               <div className="flex items-center justify-between">
                 <span className="text-text-muted">
@@ -276,15 +271,15 @@ export default function CartDrawer() {
           </div>
 
           <div className="flex items-center justify-between border-t border-sage pt-3">
-            <span className="text-xs font-semibold uppercase tracking-widest text-text-muted">
-              Total
-            </span>
-            <span className="font-heading text-2xl font-bold text-forest">
-              ₹{parseFloat(totals?.total_amount ?? 0).toFixed(0)}
-            </span>
+            <span className="text-xs font-semibold uppercase tracking-widest text-text-muted">Total</span>
+            <span className="font-heading text-2xl font-bold text-forest">₹{total}</span>
           </div>
 
-          <button className="mt-4 w-full rounded-full bg-emerald py-3.5 font-heading text-base font-bold text-white transition-colors hover:bg-emerald-dark">
+          <button
+            onClick={handleCheckout}
+            disabled={cartItems.length === 0}
+            className="mt-4 w-full rounded-full bg-emerald py-3.5 font-heading text-base font-bold text-white transition-colors hover:bg-emerald-dark disabled:cursor-not-allowed disabled:opacity-50"
+          >
             Checkout →
           </button>
 

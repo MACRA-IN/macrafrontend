@@ -21,29 +21,29 @@ const steps = [
 
 export default function HowItWorks() {
   return (
-    <section className="bg-sage/20 py-14 sm:py-20 lg:py-24">
+    <section className="bg-sage/20 py-8 sm:py-14 lg:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
 
-        <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-emerald-dark">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-emerald-dark sm:text-sm">
           How it works
         </p>
-        <h2 className="mb-12 font-heading text-3xl font-bold text-forest sm:text-4xl lg:mb-16 lg:text-5xl">
+        <h2 className="mb-8 font-heading text-2xl font-bold text-forest sm:text-3xl sm:mb-10 lg:text-4xl">
           Three steps to clean eating.
         </h2>
 
-        <div className="grid gap-5 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-3">
           {steps.map((step) => (
             <div
               key={step.number}
-              className="rounded-3xl border border-sage bg-white p-6 shadow-card sm:p-8"
+              className="rounded-2xl border border-sage bg-white p-5 shadow-card sm:p-6"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sage/60 font-heading text-lg font-bold text-emerald-dark">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-sage/60 font-heading text-sm font-bold text-emerald-dark">
                 {step.number}
               </div>
-              <h3 className="mt-4 font-heading text-xl font-bold text-forest sm:text-2xl">
+              <h3 className="mt-3 font-heading text-base font-bold text-forest sm:text-lg">
                 {step.title}
               </h3>
-              <p className="mt-3 leading-relaxed text-text-muted">
+              <p className="mt-2 text-sm leading-relaxed text-text-muted">
                 {step.description}
               </p>
             </div>
