@@ -1,4 +1,4 @@
-import snakLogo from "../../assets/logo/snak_logo.png";
+import macraLogo from "../../assets/logo/Macra.png";
 
 export default function Footer() {
   return (
@@ -8,12 +8,15 @@ export default function Footer() {
 
           {/* Brand + email */}
           <div className="lg:col-span-1">
-            <img src={snakLogo} alt="Snak" className="h-10 w-auto" />
+            <img src={macraLogo} alt="Macra" className="h-10 w-auto" />
             <p className="mt-4 max-w-sm text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.6)" }}>
-              Ready-to-eat bowls engineered to the gram. Join the founding batch
-              and help shape the menu.
+              Fresh, macro-perfect protein bowls delivered daily across
+              Hyderabad. Subscribe, plan your week, eat clean.
             </p>
-            <div className="mt-6 flex gap-2">
+            <p className="mt-6 text-xs font-semibold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.4)" }}>
+              Get launch updates
+            </p>
+            <div className="mt-3 flex gap-2">
               <input
                 type="email"
                 placeholder="you@email.com"
@@ -33,10 +36,10 @@ export default function Footer() {
                 Product
               </p>
               <ul className="space-y-3 text-sm" style={{ color: "rgba(255,255,255,0.7)" }}>
-                <li><a href="#bowls"   className="transition-colors hover:text-white">The bowls</a></li>
-                <li><a href="#science" className="transition-colors hover:text-white">The science</a></li>
-                <li><a href="#plans"   className="transition-colors hover:text-white">Plans &amp; pricing</a></li>
-                <li><a href="#"        className="transition-colors hover:text-white">Nutrition data</a></li>
+                <li><a href="/menu"     className="transition-colors hover:text-white">Menu</a></li>
+                <li><a href="/#plans"   className="transition-colors hover:text-white">Plans</a></li>
+                <li><a href="/science"  className="transition-colors hover:text-white">The science</a></li>
+                <li><a href="/subscribe" className="transition-colors hover:text-white">Start trial</a></li>
               </ul>
             </div>
             <div>
@@ -44,8 +47,8 @@ export default function Footer() {
                 Company
               </p>
               <ul className="space-y-3 text-sm" style={{ color: "rgba(255,255,255,0.7)" }}>
-                <li><a href="#" className="transition-colors hover:text-white">Our story</a></li>
-                <li><a href="#" className="transition-colors hover:text-white">Sourcing</a></li>
+                <li><a href="#" className="transition-colors hover:text-white">My account</a></li>
+                <li><a href="#" className="transition-colors hover:text-white">About</a></li>
                 <li><a href="#" className="transition-colors hover:text-white">Careers</a></li>
                 <li><a href="#" className="transition-colors hover:text-white">Contact</a></li>
               </ul>
@@ -60,12 +63,8 @@ export default function Footer() {
           className="mx-auto flex max-w-7xl flex-col items-center gap-3 px-4 py-5 text-xs sm:flex-row sm:justify-between sm:px-6"
           style={{ color: "rgba(255,255,255,0.4)" }}
         >
-          <p>© 2026 Evolve TECH PVT LIMITED · FOUNDING BATCH PREORDER</p>
-          <div className="flex gap-5">
-            <a href="#" className="transition-colors hover:text-white">Privacy</a>
-            <a href="#" className="transition-colors hover:text-white">Terms</a>
-            <a href="#" className="transition-colors hover:text-white">Nutrition Disclosure</a>
-          </div>
+          <p>© 2026 Macra · Srava Technologies Pvt Ltd</p>
+          <p>Hyderabad, India</p>
         </div>
       </div>
     </footer>

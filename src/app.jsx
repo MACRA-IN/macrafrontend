@@ -6,6 +6,7 @@ import CartPage from './pages/cart/cart';
 import { AuthProvider } from './context/authContext';
 import { CartProvider } from './context/cartContext';
 import CartDrawer from './components/cart/cartDrawer';
+import BuyFlow from './pages/buyFlow/buyFlow';
 
 const App = () => {
   return (
@@ -16,6 +17,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/cart" element={<CartPage />} />
+              <Route path="/subscribe" element={<BuyFlow />} />
             </Routes>
           </Router>
         </div>
