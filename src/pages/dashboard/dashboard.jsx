@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/home/header";
 import Footer from "../../components/home/footer";
-import MealPlanner from "../../components/dashboard/MealPlanner";
+import MealPlanner from "../../components/dashboard/mealPlanner";
 import { getMySubscription } from "../../services/subscriptionService";
 
 function SkeletonCard() {
