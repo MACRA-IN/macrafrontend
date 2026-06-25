@@ -1,9 +1,9 @@
 import axios from "axios";
-import getSnakOptions from "./snakUtils";
+import getMacOptions from "./macUtils";
 
-const snaks = getSnakOptions();
+const macs = getMacOptions();
 const apiClient = axios.create({
-  baseURL: snaks.Base_URL,
+  baseURL: macs.Base_URL,
 });
 
 apiClient.interceptors.request.use((config) => {

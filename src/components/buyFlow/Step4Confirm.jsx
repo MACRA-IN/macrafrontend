@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Check, Calendar, Clock, Utensils } from "lucide-react";
 
-export default function Step3Confirm({ tier, plan, orderData }) {
+export default function Step4Confirm({ tier, plan, orderData }) {
   const navigate = useNavigate();
 
   const tomorrow = new Date();

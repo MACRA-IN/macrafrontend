@@ -6,27 +6,27 @@ import { fillMealPlanner } from "../../services/subscriptionService";
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export default function MealPlanner({ subscription }) {
-  const [bowls, setBowls]       = useState([]);
-  const [slots, setSlots]       = useState([]);
+  const [bowls, setBowls] = useState([]);
+  const [slots, setSlots] = useState([]);
   const [pickerFor, setPickerFor] = useState(null);
-  const [saving, setSaving]     = useState(false);
-  const [saved, setSaved]       = useState(false);
-  const [error, setError]       = useState(null);
-  const [loading, setLoading]   = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+  console.log("subsc",subscription)
 
-  const deliverySlot = subscription?.delivery_slot || "both";
-  const slotColumns  =
-    deliverySlot === "lunch"  ? ["lunch"]  :
-    deliverySlot === "dinner" ? ["dinner"] :
-    ["lunch", "dinner"];
+  const deliverySlot = subscription?.delivery_slot || [];
+  const slotColumns = Array.isArray(deliverySlot)
+    ? deliverySlot.map((s) => Object.keys(s)[0])
+    : ["lunch", "dinner"];
 
   const buildDays = () => {
-    const days    = [];
+    const days = [];
     const current = new Date(subscription?.start_date);
     while (current.getDay() !== 0) {
       days.push({
         label: DAY_NAMES[current.getDay()],
-        date:  current.toISOString().split("T")[0],
+        date: current.toISOString().split("T")[0],
       });
       if (current.getDay() === 6) break;
       current.setDate(current.getDate() + 1);
@@ -36,27 +36,37 @@ export default function MealPlanner({ subscription }) {
 
   const deliveryDays = subscription ? buildDays() : [];
 
-  useEffect(() => {
-    getProducts().then((data) => {
-      if (data) {
-        setBowls(data.filter((p) => p.category_id === subscription?.category_id && p.is_active));
-      }
-      setLoading(false);
-    });
-  }, [subscription]);
+useEffect(() => {
+  getProducts().then((data) => {
+    if (data) {
+      console.log("subscription category_id:", subscription?.category_id, typeof subscription?.category_id);
+      console.log("all products:", data.map(p => ({ id: p.id, name: p.name, category_id: p.category_id, type: typeof p.category_id })));
+      
+      const filtered = data.filter(
+        (p) => p.category_id === subscription?.category_id && p.is_active,
+      );
+      console.log("filtered bowls:", filtered.length);
+      setBowls(filtered);
+    }
+    setLoading(false);
+  });
+}, [subscription]);
 
-  const findSlot = (date, slot) => slots.find((s) => s.delivery_date === date && s.slot === slot);
+  const findSlot = (date, slot) =>
+    slots.find((s) => s.delivery_date === date && s.slot === slot);
 
   const selectBowl = (bowl) => {
     if (!pickerFor) return;
     const { date, dayLabel, slot } = pickerFor;
-    const updated = slots.filter((s) => !(s.delivery_date === date && s.slot === slot));
+    const updated = slots.filter(
+      (s) => !(s.delivery_date === date && s.slot === slot),
+    );
     updated.push({
       delivery_date: date,
-      day_label:     dayLabel,
+      day_label: dayLabel,
       slot,
-      product_id:    bowl.id,
-      product_name:  bowl.name,
+      product_id: bowl.id,
+      product_name: bowl.name,
     });
     setSlots(updated);
     setPickerFor(null);
@@ -64,7 +74,9 @@ export default function MealPlanner({ subscription }) {
   };
 
   const removeSlot = (date, slot) => {
-    setSlots(slots.filter((s) => !(s.delivery_date === date && s.slot === slot)));
+    setSlots(
+      slots.filter((s) => !(s.delivery_date === date && s.slot === slot)),
+    );
     setSaved(false);
   };
 
@@ -75,13 +87,15 @@ export default function MealPlanner({ subscription }) {
       await fillMealPlanner(
         slots.map((s) => ({
           delivery_date: s.delivery_date,
-          slot:          s.slot,
-          product_id:    s.product_id,
-        }))
+          slot: s.slot,
+          product_id: s.product_id,
+        })),
       );
       setSaved(true);
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to save. Please try again.");
+      setError(
+        err.response?.data?.message || "Failed to save. Please try again.",
+      );
     } finally {
       setSaving(false);
     }
@@ -102,16 +116,22 @@ export default function MealPlanner({ subscription }) {
   }
 
   const filledCount = slots.length;
-  const totalSlots  = deliveryDays.length * slotColumns.length;
+  const totalSlots = deliveryDays.length * slotColumns.length;
 
   return (
     <div>
       <div className="flex items-start justify-between">
         <div>
-          <h2 className="font-heading text-xl font-bold text-forest">Plan your meals</h2>
+          <h2 className="font-heading text-xl font-bold text-forest">
+            Plan your meals
+          </h2>
           <p className="mt-1 text-sm text-text-muted">
-            {deliverySlot === "both" ? "Lunch + Dinner" : deliverySlot === "lunch" ? "Lunch only" : "Dinner only"}
-            {" · "}{deliveryDays.length} day{deliveryDays.length !== 1 ? "s" : ""}
+            {slotColumns
+              .join(" + ")
+              .replace("lunch", "Lunch")
+              .replace("dinner", "Dinner")}
+            {" · "}
+            {deliveryDays.length} day{deliveryDays.length !== 1 ? "s" : ""}
           </p>
         </div>
         <span className="rounded-full bg-sage px-3 py-1 text-xs font-semibold text-forest">
@@ -122,13 +142,21 @@ export default function MealPlanner({ subscription }) {
       {/* Column headers */}
       <div
         className="mt-5 grid gap-2 text-center"
-        style={{ gridTemplateColumns: `64px repeat(${slotColumns.length}, 1fr)` }}
+        style={{
+          gridTemplateColumns: `64px repeat(${slotColumns.length}, 1fr)`,
+        }}
       >
         <div />
         {slotColumns.map((col) => (
-          <div key={col} className="text-xs font-semibold uppercase tracking-wide text-text-muted">
-            {col}<br />
-            <span className="font-normal">{col === "lunch" ? "12–2 PM" : "6–8 PM"}</span>
+          <div
+            key={col}
+            className="text-xs font-semibold uppercase tracking-wide text-text-muted"
+          >
+            {col}
+            <br />
+            <span className="font-normal">
+              {col === "lunch" ? "12–2 PM" : "6–8 PM"}
+            </span>
           </div>
         ))}
       </div>
@@ -139,11 +167,15 @@ export default function MealPlanner({ subscription }) {
           <div
             key={day.date}
             className="grid gap-1.5"
-            style={{ gridTemplateColumns: `64px repeat(${slotColumns.length}, 1fr)` }}
+            style={{
+              gridTemplateColumns: `64px repeat(${slotColumns.length}, 1fr)`,
+            }}
           >
             <div className="flex flex-col justify-center">
               <span className="text-sm font-bold text-forest">{day.label}</span>
-              <span className="text-[10px] text-text-muted">{day.date.slice(5)}</span>
+              <span className="text-[10px] text-text-muted">
+                {day.date.slice(5)}
+              </span>
             </div>
             {slotColumns.map((slot) => {
               const filled = findSlot(day.date, slot);
@@ -153,7 +185,11 @@ export default function MealPlanner({ subscription }) {
                   onClick={() =>
                     filled
                       ? removeSlot(day.date, slot)
-                      : setPickerFor({ date: day.date, dayLabel: day.label, slot })
+                      : setPickerFor({
+                          date: day.date,
+                          dayLabel: day.label,
+                          slot,
+                        })
                   }
                   className={`min-h-[52px] rounded-xl border p-2 text-xs transition-all ${
                     filled
@@ -164,7 +200,9 @@ export default function MealPlanner({ subscription }) {
                   {filled ? (
                     <div>
                       <p className="leading-tight">{filled.product_name}</p>
-                      <p className="mt-0.5 text-[10px] font-normal text-text-muted">tap to remove</p>
+                      <p className="mt-0.5 text-[10px] font-normal text-text-muted">
+                        tap to remove
+                      </p>
                     </div>
                   ) : (
                     <span className="text-base">+</span>
@@ -181,7 +219,8 @@ export default function MealPlanner({ subscription }) {
         <div className="mt-4 rounded-2xl border border-emerald/40 bg-sage/20 p-4">
           <div className="mb-3 flex items-center justify-between">
             <p className="font-heading text-sm font-semibold text-forest">
-              {pickerFor.dayLabel} · {pickerFor.slot === "lunch" ? "Lunch 12–2 PM" : "Dinner 6–8 PM"}
+              {pickerFor.dayLabel} ·{" "}
+              {pickerFor.slot === "lunch" ? "Lunch 12–2 PM" : "Dinner 6–8 PM"}
             </p>
             <button
               onClick={() => setPickerFor(null)}
@@ -197,9 +236,12 @@ export default function MealPlanner({ subscription }) {
                 onClick={() => selectBowl(bowl)}
                 className="rounded-xl border border-sage bg-white p-3 text-left transition-colors hover:border-emerald hover:bg-sage/10"
               >
-                <p className="font-heading text-sm font-semibold text-forest">{bowl.name}</p>
+                <p className="font-heading text-sm font-semibold text-forest">
+                  {bowl.name}
+                </p>
                 <p className="mt-0.5 text-xs text-emerald">
-                  {bowl.calories} kcal · {parseFloat(bowl.protein_g).toFixed(0)}g protein
+                  {bowl.calories} kcal · {parseFloat(bowl.protein_g).toFixed(0)}
+                  g protein
                 </p>
               </button>
             ))}
@@ -208,15 +250,23 @@ export default function MealPlanner({ subscription }) {
       )}
 
       {/* Progress bar */}
-      <div className="mt-5 overflow-hidden rounded-full bg-sage/40" style={{ height: 4 }}>
+      <div
+        className="mt-5 overflow-hidden rounded-full bg-sage/40"
+        style={{ height: 4 }}
+      >
         <div
           className="h-full rounded-full bg-emerald transition-all duration-500"
-          style={{ width: totalSlots > 0 ? `${(filledCount / totalSlots) * 100}%` : "0%" }}
+          style={{
+            width:
+              totalSlots > 0 ? `${(filledCount / totalSlots) * 100}%` : "0%",
+          }}
         />
       </div>
 
       {error && (
-        <p className="mt-3 rounded-xl bg-red-50 p-3 text-sm text-red-600">{error}</p>
+        <p className="mt-3 rounded-xl bg-red-50 p-3 text-sm text-red-600">
+          {error}
+        </p>
       )}
 
       <button

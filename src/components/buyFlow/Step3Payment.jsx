@@ -10,7 +10,7 @@ const METHODS = [
   { id: "netbanking", label: "Net Banking",             sub: "All major banks",           emoji: "🏦" },
 ];
 
-export default function Step2Payment({ tier, plan, slotChoice, onSuccess }) {
+export default function Step3Payment({ tier, plan, slotChoice, onSuccess }) {
   const [method, setMethod] = useState("upi");
   const [pricing, setPricing] = useState(null);
   const [paying, setPaying] = useState(false);

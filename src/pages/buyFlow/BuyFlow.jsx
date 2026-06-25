@@ -4,10 +4,11 @@ import { ChevronLeft } from "lucide-react";
 import macraLogo from "../../assets/logo/Macra.png";
 
 import Step1TierPlan from "../../components/buyFlow/Step1Tierplan";
-import Step2Payment from "../../components/buyFlow/Step2Payment";
-import Step3Confirm from "../../components/buyFlow/Step3Confirm";
+import Step2Address from "../../components/buyFlow/Step2Address";
+import Step3Payment from "../../components/buyFlow/Step3Payment";
+import Step4Confirm from "../../components/buyFlow/Step4Confirm";
 
-const STEPS = ["Your Plan", "Payment", "Confirmed"];
+const STEP_LABELS = ["Your Plan", "Delivery", "Payment", "Confirmed"];
 
 export default function BuyFlow() {
   const navigate = useNavigate();
@@ -17,7 +18,8 @@ export default function BuyFlow() {
   const [slotChoice, setSlotChoice] = useState(null);
   const [orderData, setOrderData] = useState(null);
 
-  const goNext = () => setStep((s) => Math.min(s + 1, 3));
+  const totalSteps = 4;
+  const goNext = () => setStep((s) => Math.min(s + 1, totalSteps));
   const goBack = () => {
     if (step === 1) navigate("/");
     else setStep((s) => s - 1);
@@ -38,16 +40,18 @@ export default function BuyFlow() {
           />
         );
       case 2:
+        return <Step2Address onContinue={goNext} />;
+      case 3:
         return (
-          <Step2Payment
+          <Step3Payment
             tier={tier}
             plan={plan}
             slotChoice={slotChoice}
             onSuccess={(data) => { setOrderData(data); goNext(); }}
           />
         );
-      case 3:
-        return <Step3Confirm tier={tier} plan={plan} orderData={orderData} />;
+      case 4:
+        return <Step4Confirm tier={tier} plan={plan} orderData={orderData} />;
       default:
         return null;
     }
@@ -59,7 +63,7 @@ export default function BuyFlow() {
 
         {/* Header */}
         <div className="mb-5 flex items-center justify-between">
-          {step < 3 ? (
+          {step < 4 ? (
             <button
               onClick={goBack}
               className="flex h-10 w-10 items-center justify-center rounded-full border border-sage bg-white shadow-sm transition-colors hover:bg-sage/30"
@@ -71,15 +75,15 @@ export default function BuyFlow() {
           )}
           <img src={macraLogo} alt="Macra" className="h-8 w-auto" />
           <span className="min-w-[40px] text-right text-sm font-medium text-text-muted">
-            {step < 3 ? `${step} / 2` : ""}
+            {step < 4 ? `${step} / 3` : ""}
           </span>
         </div>
 
-        {/* Step progress */}
-        {step < 3 && (
+        {/* Progress bar */}
+        {step < 4 && (
           <div className="mb-6">
             <div className="flex gap-1.5">
-              {[1, 2].map((n) => (
+              {[1, 2, 3].map((n) => (
                 <div
                   key={n}
                   className={`h-1 flex-1 rounded-full transition-all duration-500 ${
@@ -89,7 +93,7 @@ export default function BuyFlow() {
               ))}
             </div>
             <p className="mt-2 text-xs font-medium text-text-muted">
-              Step {step} of 2 · {STEPS[step - 1]}
+              Step {Math.min(step, 3)} of 3 · {STEP_LABELS[step - 1]}
             </p>
           </div>
         )}
