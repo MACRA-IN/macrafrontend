@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MapPin, Phone, Mail, Clock, Instagram, Send, CheckCircle2 } from "lucide-react";
+import { MapPin, Phone, Mail, Timer, Send, CheckCircle2 } from "lucide-react";
 import Header from "../../components/home/header";
 import Footer from "../../components/home/footer";
 
@@ -22,7 +22,7 @@ const INFO = [
     href: "tel:+918309180145",
   },
   {
-    icon: Clock,
+    icon: Timer,
     label: "Business Hours",
     lines: ["Monday – Saturday", "9:00 AM – 9:00 PM IST"],
   },
@@ -107,7 +107,7 @@ export default function ContactPage() {
             {/* Social */}
             <div className="flex items-start gap-4 rounded-2xl border border-sage bg-white p-4 shadow-card">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sage/40">
-                <Instagram size={18} className="text-emerald-dark" />
+                <MapPin size={18} className="text-emerald-dark" />
               </div>
               <div>
                 <p className="font-heading text-xs font-bold uppercase tracking-wide text-text-muted">
