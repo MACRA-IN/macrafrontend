@@ -12,6 +12,7 @@ import RefundPolicy from './pages/legal/refundPolicy';
 import DeliveryPolicy from './pages/legal/deliveryPolicy';
 import ContactPage from './pages/legal/contactPage';
 import About from './pages/about/about';
+import MobileNav from './components/home/mobileNav';
 import { AuthProvider, useAuth } from './context/authContext';
 import { CartProvider } from './context/cartContext';
 import AuthModal from './components/auth/authModal';
@@ -50,6 +51,7 @@ const App = () => {
             <Route path="/contact"         element={<ContactPage />} />
             <Route path="/about"           element={<About />} />
           </Routes>
+          <MobileNav />
         </Router>
       </CartProvider>
     </AuthProvider>

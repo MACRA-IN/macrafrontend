@@ -208,7 +208,7 @@ export default function ContactPage() {
                       required
                       value={form.name}
                       onChange={handleChange}
-                      placeholder="Nandakishore Reddy"
+                      placeholder="Enter Your Name"
                       className="w-full rounded-xl border border-sage bg-bg px-4 py-3 text-sm text-forest outline-none transition-all placeholder:text-text-muted/50 focus:border-emerald focus:ring-2 focus:ring-emerald/20"
                     />
                   </div>

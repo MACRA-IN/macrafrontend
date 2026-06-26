@@ -204,7 +204,7 @@ export default function AuthModal({ onClose, onSuccess }) {
               <FieldWrapper label="Full name" error={errors.name} touched={rt.name}>
                 <input
                   type="text"
-                  placeholder="Nandakishore Reddy"
+                  placeholder="Enter Your Name"
                   autoComplete="name"
                   value={rf.name}
                   onChange={(e) => update("name", e.target.value)}
