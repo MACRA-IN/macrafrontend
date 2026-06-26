@@ -55,18 +55,11 @@ const Hero = () => {
           {/* Right: bowl image + floating badges */}
           <div className="relative">
             <div className="overflow-hidden rounded-3xl border border-sage">
-              <div
-                className="relative flex h-72 w-full items-center justify-center sm:h-96 lg:h-96"
-                style={{
-                  backgroundColor: "#C6E8D4",
-                  backgroundImage:
-                    "repeating-linear-gradient(-45deg, transparent, transparent 20px, rgba(255,255,255,0.45) 20px, rgba(255,255,255,0.45) 36px)",
-                }}
-              >
-                <span className="font-mono text-xs uppercase tracking-[0.25em] text-green-500/40">
-                  Bowl Photo
-                </span>
-              </div>
+              <img
+                src="/banners/protienbowl.png"
+                alt="Protein bowl"
+                className="h-72 w-full object-cover sm:h-96 lg:h-96"
+              />
             </div>
 
             <div className="absolute left-5 top-5 rounded-2xl bg-white px-4 py-2 shadow-md">

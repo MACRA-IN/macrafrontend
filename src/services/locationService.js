@@ -6,7 +6,6 @@ export const checkDeliveryArea = async (latitude, longitude) => {
       latitude,
       longitude,
     });
-    console.log(response.data);
 
     return response.data;
   } catch (error) {

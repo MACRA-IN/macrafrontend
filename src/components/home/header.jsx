@@ -81,7 +81,7 @@ const Header = () => {
               onClick={() => user ? navigate("/subscribe") : openAuthWithRedirect("/subscribe")}
               className="hidden rounded-full bg-emerald px-6 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-dark md:block"
             >
-              Start trial
+             Order Now
             </button>
 
             {/* Mobile hamburger */}
@@ -139,7 +139,7 @@ const Header = () => {
               onClick={() => { closeNav(); user ? navigate("/subscribe") : openAuthWithRedirect("/subscribe"); }}
               className="mt-4 w-full rounded-full bg-emerald py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-dark"
             >
-              Start trial
+              Order Now
             </button>
           </div>
         )}

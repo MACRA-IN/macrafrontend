@@ -13,7 +13,6 @@ export default function MealPlanner({ subscription }) {
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  console.log("subsc",subscription)
 
   const deliverySlot = subscription?.delivery_slot || [];
   const slotColumns = Array.isArray(deliverySlot)
@@ -39,13 +38,10 @@ export default function MealPlanner({ subscription }) {
 useEffect(() => {
   getProducts().then((data) => {
     if (data) {
-      console.log("subscription category_id:", subscription?.category_id, typeof subscription?.category_id);
-      console.log("all products:", data.map(p => ({ id: p.id, name: p.name, category_id: p.category_id, type: typeof p.category_id })));
-      
+     
       const filtered = data.filter(
         (p) => p.category_id === subscription?.category_id && p.is_active,
       );
-      console.log("filtered bowls:", filtered.length);
       setBowls(filtered);
     }
     setLoading(false);

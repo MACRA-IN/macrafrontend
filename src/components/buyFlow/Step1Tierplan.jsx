@@ -360,8 +360,15 @@ export default function Step1TierPlan({
                   </div>
                 )}
                 <div className="flex justify-between text-text-muted">
-                  <span>Delivery</span>
-                  <span className="font-semibold text-emerald">Free</span>
+                  <span>
+                    Delivery
+                    {pricing.delivery_total > 0 && (
+                      <span className="ml-1 text-[10px]">({pricing.days} days × ₹{pricing.delivery_charge})</span>
+                    )}
+                  </span>
+                  <span className={pricing.delivery_total === 0 ? "font-semibold text-emerald" : ""}>
+                    {pricing.delivery_total === 0 ? "Free" : `₹${pricing.delivery_total}`}
+                  </span>
                 </div>
               </div>
               <div className="mt-3 flex items-center justify-between border-t border-sage pt-3">
