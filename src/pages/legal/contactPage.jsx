@@ -1,7 +1,30 @@
 import { useState } from "react";
 import { MapPin, Phone, Mail, Timer, Send, CheckCircle2 } from "lucide-react";
+import SEO from "../../components/common/SEO";
 import Header from "../../components/home/header";
 import Footer from "../../components/home/footer";
+
+const contactSchema = {
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  "name": "Contact Macra",
+  "url": "https://macra.in/contact",
+  "mainEntity": {
+    "@type": "LocalBusiness",
+    "name": "Macra",
+    "telephone": "+918309180145",
+    "email": "nanduboda13@gmail.com",
+    "openingHours": "Mo-Sa 09:00-21:00",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "KPHB Colony",
+      "addressLocality": "Hyderabad",
+      "addressRegion": "Telangana",
+      "postalCode": "500085",
+      "addressCountry": "IN"
+    }
+  }
+};
 
 const INFO = [
   {
@@ -47,6 +70,13 @@ export default function ContactPage() {
 
   return (
     <div className="bg-bg">
+      <SEO
+        title="Contact Us | Macra Hyderabad"
+        description="Get in touch with Macra. We deliver protein bowls in KPHB, Hyderabad. Email, phone, and support for orders, subscriptions, and feedback."
+        keywords="contact Macra, Macra Hyderabad contact, protein bowl delivery support, KPHB food delivery contact"
+        canonicalPath="/contact"
+        structuredData={contactSchema}
+      />
       <Header />
 
       {/* Hero */}

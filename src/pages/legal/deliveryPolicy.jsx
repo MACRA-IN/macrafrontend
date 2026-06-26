@@ -1,3 +1,4 @@
+import SEO from "../../components/common/SEO";
 import Header from "../../components/home/header";
 import Footer from "../../components/home/footer";
 
@@ -24,6 +25,12 @@ function InfoCard({ icon, label, value }) {
 export default function DeliveryPolicy() {
   return (
     <div className="bg-bg">
+      <SEO
+        title="Delivery Policy | Macra Hyderabad"
+        description="Macra delivers protein bowls in KPHB, Hyderabad within a 3km radius. Lunch 12–2 PM, Dinner 6–8 PM, Monday to Saturday. Fresh, tamper-evident packaging."
+        keywords="food delivery Hyderabad, KPHB delivery, protein bowl delivery, meal delivery times Hyderabad"
+        canonicalPath="/delivery-policy"
+      />
       <Header />
 
       {/* Hero */}

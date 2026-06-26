@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+Disallow: /dashboard
+Disallow: /cart
+Disallow: /subscribe
+
+Sitemap: https://macra.in/sitemap.xml

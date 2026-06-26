@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
+import SEO from "../../components/common/SEO";
 import macraLogo from "../../assets/logo/Macra.png";
 
 import Step1TierPlan from "../../components/buyFlow/Step1Tierplan";
@@ -59,6 +60,12 @@ export default function BuyFlow() {
 
   return (
     <div className="min-h-screen bg-bg">
+      <SEO
+        title="Start Your Subscription | Macra"
+        description="Subscribe to daily protein bowls in 3 simple steps. Pick your tier, choose your plan, and get fresh bowls delivered to your door in Hyderabad."
+        canonicalPath="/subscribe"
+        noIndex
+      />
       <div className="mx-auto max-w-lg px-4 pb-12 pt-6">
 
         {/* Header */}
@@ -74,7 +81,7 @@ export default function BuyFlow() {
             <div className="w-10" />
           )}
           <img src={macraLogo} alt="Macra" className="h-8 w-auto" />
-          <span className="min-w-[40px] text-right text-sm font-medium text-text-muted">
+          <span className="min-w-10 text-right text-sm font-medium text-text-muted">
             {step < 4 ? `${step} / 3` : ""}
           </span>
         </div>

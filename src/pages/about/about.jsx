@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import SEO from "../../components/common/SEO";
 import Header from "../../components/home/header";
 import Footer from "../../components/home/footer";
 
@@ -30,6 +31,12 @@ export default function About() {
 
   return (
     <div className="bg-bg">
+      <SEO
+        title="About Macra — Protein Bowls Delivered in Hyderabad"
+        description="Macra is a subscription-based protein bowl delivery service in KPHB, Hyderabad. Every bowl is weighed to the gram, cooked in olive oil, and delivered fresh daily."
+        keywords="about Macra, protein bowl delivery Hyderabad, healthy food Hyderabad, KPHB meal delivery"
+        canonicalPath="/about"
+      />
       <Header />
 
       {/* Hero */}

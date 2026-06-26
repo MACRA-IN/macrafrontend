@@ -1,3 +1,4 @@
+import SEO from "../../components/common/SEO";
 import Header from "../../components/home/header";
 import Footer from "../../components/home/footer";
 
@@ -39,6 +40,11 @@ function Table({ heads, rows }) {
 export default function TermsAndConditions() {
   return (
     <div className="bg-bg">
+      <SEO
+        title="Terms & Conditions | Macra"
+        description="Terms and conditions for using Macra's meal subscription service in Hyderabad. Understand your rights and responsibilities as a subscriber."
+        canonicalPath="/terms"
+      />
       <Header />
 
       {/* Hero */}

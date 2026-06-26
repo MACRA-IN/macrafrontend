@@ -1,3 +1,4 @@
+import SEO from "../../components/common/SEO";
 import Header from "../../components/home/header";
 import Footer from "../../components/home/footer";
 
@@ -54,6 +55,11 @@ function RefundScenario({ icon, title, eligible, children }) {
 export default function RefundPolicy() {
   return (
     <div className="bg-bg">
+      <SEO
+        title="Refund & Cancellation Policy | Macra"
+        description="Macra's refund and cancellation policy for meal subscriptions. Pro-rata refunds, cancellation process, and damaged order replacements explained clearly."
+        canonicalPath="/refund-policy"
+      />
       <Header />
 
       {/* Hero */}

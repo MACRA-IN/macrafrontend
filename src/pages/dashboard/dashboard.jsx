@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import SEO from "../../components/common/SEO";
 import Header from "../../components/home/header";
 import Footer from "../../components/home/footer";
 import MealPlanner from "../../components/dashboard/mealPlanner";
 import { getMySubscription } from "../../services/subscriptionService";
+
+const DASHBOARD_SEO = (
+  <SEO title="My Dashboard | Macra" noIndex />
+);
 
 function SkeletonCard() {
   return (
@@ -46,6 +51,7 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div>
+        {DASHBOARD_SEO}
         <Header />
         <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
           <div className="h-8 w-48 animate-pulse rounded-full bg-forest/10" />
@@ -63,6 +69,7 @@ export default function Dashboard() {
   if (!subscription) {
     return (
       <div>
+        {DASHBOARD_SEO}
         <Header />
         <div className="mx-auto max-w-4xl px-4 py-20 text-center sm:px-6">
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl bg-sage/40">
@@ -94,6 +101,7 @@ export default function Dashboard() {
 
   return (
     <div>
+      {DASHBOARD_SEO}
       <Header />
 
       <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">

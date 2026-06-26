@@ -1,3 +1,4 @@
+import SEO from "../../components/common/SEO";
 import Header from "../../components/home/header";
 import Footer from "../../components/home/footer";
 
@@ -39,6 +40,11 @@ function Table({ heads, rows }) {
 export default function PrivacyPolicy() {
   return (
     <div className="bg-bg">
+      <SEO
+        title="Privacy Policy | Macra"
+        description="Macra's privacy policy — how we collect, store, and protect your personal data. Compliant with Indian IT Act 2000 and IT (Reasonable Security Practices) Rules 2011."
+        canonicalPath="/privacy-policy"
+      />
       <Header />
 
       {/* Hero */}

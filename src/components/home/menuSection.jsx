@@ -1,6 +1,89 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import SEO from "../common/SEO";
 import Header from "../../components/home/header";
+
+const menuSchema = {
+  "@context": "https://schema.org",
+  "@type": "Menu",
+  "name": "Macra Protein Bowl Menu",
+  "description": "High-protein bowls in 4 tiers, every bowl weighed to the gram with full macro breakdown",
+  "url": "https://macra.in/menu",
+  "hasMenuSection": [
+    {
+      "@type": "MenuSection",
+      "name": "Mini Bowl",
+      "description": "Starter protein bowl — great for light meals or calorie-controlled diets",
+      "hasMenuItem": [{
+        "@type": "MenuItem",
+        "name": "Mini Protein Bowl",
+        "description": "High-protein mini bowl, weighed to the gram, cooked in olive oil",
+        "offers": { "@type": "Offer", "price": "149", "priceCurrency": "INR" },
+        "nutrition": {
+          "@type": "NutritionInformation",
+          "calories": "350 calories",
+          "proteinContent": "25 g",
+          "carbohydrateContent": "35 g",
+          "fatContent": "8 g"
+        }
+      }]
+    },
+    {
+      "@type": "MenuSection",
+      "name": "Standard Bowl",
+      "description": "Our most popular tier — balanced macros for everyday fitness goals",
+      "hasMenuItem": [{
+        "@type": "MenuItem",
+        "name": "Standard Protein Bowl",
+        "description": "High-protein standard bowl, weighed to the gram, cooked in olive oil",
+        "offers": { "@type": "Offer", "price": "179", "priceCurrency": "INR" },
+        "nutrition": {
+          "@type": "NutritionInformation",
+          "calories": "450 calories",
+          "proteinContent": "35 g",
+          "carbohydrateContent": "45 g",
+          "fatContent": "10 g"
+        }
+      }]
+    },
+    {
+      "@type": "MenuSection",
+      "name": "Pro Bowl",
+      "description": "For serious athletes and heavy lifters who need extra fuel",
+      "hasMenuItem": [{
+        "@type": "MenuItem",
+        "name": "Pro Protein Bowl",
+        "description": "High-protein pro bowl for athletes, weighed to the gram, cooked in olive oil",
+        "offers": { "@type": "Offer", "price": "219", "priceCurrency": "INR" },
+        "nutrition": {
+          "@type": "NutritionInformation",
+          "calories": "550 calories",
+          "proteinContent": "45 g",
+          "carbohydrateContent": "55 g",
+          "fatContent": "12 g"
+        }
+      }]
+    },
+    {
+      "@type": "MenuSection",
+      "name": "Large Bowl",
+      "description": "Maximum protein for maximum gains — our highest-protein tier",
+      "hasMenuItem": [{
+        "@type": "MenuItem",
+        "name": "Large Protein Bowl",
+        "description": "Large high-protein bowl, weighed to the gram, cooked in olive oil",
+        "offers": { "@type": "Offer", "price": "249", "priceCurrency": "INR" },
+        "nutrition": {
+          "@type": "NutritionInformation",
+          "calories": "650 calories",
+          "proteinContent": "55 g",
+          "carbohydrateContent": "65 g",
+          "fatContent": "14 g"
+        }
+      }]
+    }
+  ]
+};
 import Footer from "../../components/home/footer";
 import { getCategories } from "../../services/categoryService";
 import { getProducts } from "../../services/productService";
@@ -53,6 +136,13 @@ export default function MenuPage() {
 
   return (
     <div>
+      <SEO
+        title="Menu — Every Bowl on the Menu | Macra Hyderabad"
+        description="Explore Macra's protein bowl menu — 4 tiers from Mini (₹149) to Large (₹249). Every bowl weighed to the gram with full macro breakdown. 100% preservative-free."
+        keywords="protein bowl menu Hyderabad, healthy bowls Hyderabad, chicken bowl, paneer bowl, high protein lunch, macro meals menu, KPHB meal delivery menu"
+        canonicalPath="/menu"
+        structuredData={menuSchema}
+      />
       <Header />
 
       <section className="bg-sage/20 py-8 sm:py-14">
