@@ -6,83 +6,99 @@ import Header from "../../components/home/header";
 const menuSchema = {
   "@context": "https://schema.org",
   "@type": "Menu",
-  "name": "Macra Protein Bowl Menu",
-  "description": "High-protein bowls in 4 tiers, every bowl weighed to the gram with full macro breakdown",
-  "url": "https://macra.in/menu",
-  "hasMenuSection": [
+  name: "Macra Protein Bowl Menu",
+  description:
+    "High-protein bowls in 4 tiers, every bowl weighed to the gram with full macro breakdown",
+  url: "https://macra.in/menu",
+  hasMenuSection: [
     {
       "@type": "MenuSection",
-      "name": "Mini Bowl",
-      "description": "Starter protein bowl — great for light meals or calorie-controlled diets",
-      "hasMenuItem": [{
-        "@type": "MenuItem",
-        "name": "Mini Protein Bowl",
-        "description": "High-protein mini bowl, weighed to the gram, cooked in olive oil",
-        "offers": { "@type": "Offer", "price": "149", "priceCurrency": "INR" },
-        "nutrition": {
-          "@type": "NutritionInformation",
-          "calories": "350 calories",
-          "proteinContent": "25 g",
-          "carbohydrateContent": "35 g",
-          "fatContent": "8 g"
-        }
-      }]
+      name: "Mini Bowl",
+      description:
+        "Starter protein bowl — great for light meals or calorie-controlled diets",
+      hasMenuItem: [
+        {
+          "@type": "MenuItem",
+          name: "Mini Protein Bowl",
+          description:
+            "High-protein mini bowl, weighed to the gram, cooked in olive oil",
+          offers: { "@type": "Offer", price: "149", priceCurrency: "INR" },
+          nutrition: {
+            "@type": "NutritionInformation",
+            calories: "350 calories",
+            proteinContent: "25 g",
+            carbohydrateContent: "35 g",
+            fatContent: "8 g",
+          },
+        },
+      ],
     },
     {
       "@type": "MenuSection",
-      "name": "Standard Bowl",
-      "description": "Our most popular tier — balanced macros for everyday fitness goals",
-      "hasMenuItem": [{
-        "@type": "MenuItem",
-        "name": "Standard Protein Bowl",
-        "description": "High-protein standard bowl, weighed to the gram, cooked in olive oil",
-        "offers": { "@type": "Offer", "price": "179", "priceCurrency": "INR" },
-        "nutrition": {
-          "@type": "NutritionInformation",
-          "calories": "450 calories",
-          "proteinContent": "35 g",
-          "carbohydrateContent": "45 g",
-          "fatContent": "10 g"
-        }
-      }]
+      name: "Standard Bowl",
+      description:
+        "Our most popular tier — balanced macros for everyday fitness goals",
+      hasMenuItem: [
+        {
+          "@type": "MenuItem",
+          name: "Standard Protein Bowl",
+          description:
+            "High-protein standard bowl, weighed to the gram, cooked in olive oil",
+          offers: { "@type": "Offer", price: "179", priceCurrency: "INR" },
+          nutrition: {
+            "@type": "NutritionInformation",
+            calories: "450 calories",
+            proteinContent: "35 g",
+            carbohydrateContent: "45 g",
+            fatContent: "10 g",
+          },
+        },
+      ],
     },
     {
       "@type": "MenuSection",
-      "name": "Pro Bowl",
-      "description": "For serious athletes and heavy lifters who need extra fuel",
-      "hasMenuItem": [{
-        "@type": "MenuItem",
-        "name": "Pro Protein Bowl",
-        "description": "High-protein pro bowl for athletes, weighed to the gram, cooked in olive oil",
-        "offers": { "@type": "Offer", "price": "219", "priceCurrency": "INR" },
-        "nutrition": {
-          "@type": "NutritionInformation",
-          "calories": "550 calories",
-          "proteinContent": "45 g",
-          "carbohydrateContent": "55 g",
-          "fatContent": "12 g"
-        }
-      }]
+      name: "Pro Bowl",
+      description: "For serious athletes and heavy lifters who need extra fuel",
+      hasMenuItem: [
+        {
+          "@type": "MenuItem",
+          name: "Pro Protein Bowl",
+          description:
+            "High-protein pro bowl for athletes, weighed to the gram, cooked in olive oil",
+          offers: { "@type": "Offer", price: "219", priceCurrency: "INR" },
+          nutrition: {
+            "@type": "NutritionInformation",
+            calories: "550 calories",
+            proteinContent: "45 g",
+            carbohydrateContent: "55 g",
+            fatContent: "12 g",
+          },
+        },
+      ],
     },
     {
       "@type": "MenuSection",
-      "name": "Large Bowl",
-      "description": "Maximum protein for maximum gains — our highest-protein tier",
-      "hasMenuItem": [{
-        "@type": "MenuItem",
-        "name": "Large Protein Bowl",
-        "description": "Large high-protein bowl, weighed to the gram, cooked in olive oil",
-        "offers": { "@type": "Offer", "price": "249", "priceCurrency": "INR" },
-        "nutrition": {
-          "@type": "NutritionInformation",
-          "calories": "650 calories",
-          "proteinContent": "55 g",
-          "carbohydrateContent": "65 g",
-          "fatContent": "14 g"
-        }
-      }]
-    }
-  ]
+      name: "Large Bowl",
+      description:
+        "Maximum protein for maximum gains — our highest-protein tier",
+      hasMenuItem: [
+        {
+          "@type": "MenuItem",
+          name: "Large Protein Bowl",
+          description:
+            "Large high-protein bowl, weighed to the gram, cooked in olive oil",
+          offers: { "@type": "Offer", price: "249", priceCurrency: "INR" },
+          nutrition: {
+            "@type": "NutritionInformation",
+            calories: "650 calories",
+            proteinContent: "55 g",
+            carbohydrateContent: "65 g",
+            fatContent: "14 g",
+          },
+        },
+      ],
+    },
+  ],
 };
 import Footer from "../../components/home/footer";
 import { getCategories } from "../../services/categoryService";
@@ -106,32 +122,42 @@ function BowlCardSkeleton() {
 
 export default function MenuPage() {
   const navigate = useNavigate();
-  const [tiers, setTiers]     = useState([]);
+  const [tiers, setTiers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([getCategories(), getProducts()]).then(([categories, products]) => {
-      if (!categories || !products) { setLoading(false); return; }
-      const result = categories
-        .filter((c) => c.is_subscribable)
-        .map((cat) => {
-          const bowls = products.filter((p) => p.category_id === cat.id && p.is_active);
-          return {
-            id: cat.id,
-            name: cat.name,
-            price: parseFloat(bowls[0]?.price ?? 0),
-            avgProtein:
-              bowls.length > 0
-                ? Math.round(
-                    bowls.reduce((sum, b) => sum + parseFloat(b.protein_g || 0), 0) / bowls.length
-                  )
-                : 0,
-            bowls,
-          };
-        });
-      setTiers(result);
-      setLoading(false);
-    });
+    Promise.all([getCategories(), getProducts()]).then(
+      ([categories, products]) => {
+        if (!categories || !products) {
+          setLoading(false);
+          return;
+        }
+        const result = categories
+          .filter((c) => c.is_subscribable)
+          .map((cat) => {
+            const bowls = products.filter(
+              (p) => p.category_id === cat.id && p.is_active,
+            );
+            return {
+              id: cat.id,
+              name: cat.name,
+              price: parseFloat(bowls[0]?.price ?? 0),
+              avgProtein:
+                bowls.length > 0
+                  ? Math.round(
+                      bowls.reduce(
+                        (sum, b) => sum + parseFloat(b.protein_g || 0),
+                        0,
+                      ) / bowls.length,
+                    )
+                  : 0,
+              bowls,
+            };
+          });
+        setTiers(result);
+        setLoading(false);
+      },
+    );
   }, []);
 
   return (
@@ -147,7 +173,6 @@ export default function MenuPage() {
 
       <section className="bg-sage/20 py-8 sm:py-14">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
-
           <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-emerald-dark sm:text-sm">
             The menu
           </p>
@@ -170,7 +195,9 @@ export default function MenuPage() {
                   </div>
                   <div className="mt-2 h-4 w-28 animate-pulse rounded-full bg-forest/5" />
                   <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                    {[1, 2, 3].map((n) => <BowlCardSkeleton key={n} />)}
+                    {[1, 2, 3].map((n) => (
+                      <BowlCardSkeleton key={n} />
+                    ))}
                   </div>
                 </div>
               ))}
@@ -179,12 +206,16 @@ export default function MenuPage() {
             tiers.map((tier) => (
               <div key={tier.id} className="mt-14">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h2 className="font-heading text-lg font-bold text-forest sm:text-xl">{tier.name}</h2>
+                  <h2 className="font-heading text-lg font-bold text-forest sm:text-xl">
+                    {tier.name}
+                  </h2>
                   <span className="rounded-full bg-emerald px-3 py-0.5 font-heading text-xs font-bold text-white">
                     ₹{tier.price.toFixed(0)} / bowl
                   </span>
                 </div>
-                <p className="mt-1 text-sm text-text-muted">~{tier.avgProtein}g protein</p>
+                <p className="mt-1 text-sm text-text-muted">
+                  ~{tier.avgProtein}g protein
+                </p>
 
                 <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                   {tier.bowls.map((bowl) => (
@@ -194,18 +225,16 @@ export default function MenuPage() {
                     >
                       <div
                         className="flex h-32 items-center justify-center sm:h-40"
-                        style={{
-                          backgroundColor: "#C6E8D4",
-                          backgroundImage:
-                            "repeating-linear-gradient(-45deg, transparent, transparent 20px, rgba(255,255,255,0.45) 20px, rgba(255,255,255,0.45) 36px)",
-                        }}
+                      
                       >
                         {bowl.image_url ? (
-                          <img
-                            src={bowl.image_url}
-                            alt={bowl.name}
-                            className="h-full w-full object-cover"
-                          />
+                          <div className="flex h-40 items-center justify-center ">
+                            <img
+                              src={bowl.image_url}
+                              alt={bowl.name}
+                              className="h-39 w-39 rounded-full object-cover"
+                            />
+                          </div>
                         ) : (
                           <span className="font-mono text-xs uppercase tracking-[0.25em] text-green-500/40">
                             bowl photo
@@ -214,9 +243,13 @@ export default function MenuPage() {
                       </div>
 
                       <div className="p-4">
-                        <h3 className="font-heading text-base font-bold text-forest">{bowl.name}</h3>
+                        <h3 className="font-heading text-base font-bold text-forest">
+                          {bowl.name}
+                        </h3>
                         <p className="mt-1.5 text-xs font-semibold text-emerald">
-                          {bowl.calories} kcal · {parseFloat(bowl.protein_g).toFixed(0)}g protein · {parseFloat(bowl.fiber_g).toFixed(0)}g fiber
+                          {bowl.calories} kcal ·{" "}
+                          {parseFloat(bowl.protein_g).toFixed(0)}g protein ·{" "}
+                          {parseFloat(bowl.fiber_g).toFixed(0)}g fiber
                         </p>
                         <div className="mt-4 flex items-center justify-between">
                           <p className="font-heading text-lg font-bold text-forest">
@@ -240,9 +273,15 @@ export default function MenuPage() {
           {/* Bottom CTA */}
           {!loading && tiers.length > 0 && (
             <div className="mt-10 rounded-2xl bg-forest px-6 py-8 text-center text-white sm:mt-12 sm:px-8">
-              <h2 className="font-heading text-xl font-bold sm:text-2xl">Ready to start?</h2>
-              <p className="mt-2 text-xs sm:text-sm" style={{ color: "rgba(255,255,255,0.6)" }}>
-                Pick a tier and subscribe. Bowls change weekly so you never get bored.
+              <h2 className="font-heading text-xl font-bold sm:text-2xl">
+                Ready to start?
+              </h2>
+              <p
+                className="mt-2 text-xs sm:text-sm"
+                style={{ color: "rgba(255,255,255,0.6)" }}
+              >
+                Pick a tier and subscribe. Bowls change weekly so you never get
+                bored.
               </p>
               <button
                 onClick={() => navigate("/subscribe")}
@@ -252,7 +291,6 @@ export default function MenuPage() {
               </button>
             </div>
           )}
-
         </div>
       </section>
 
