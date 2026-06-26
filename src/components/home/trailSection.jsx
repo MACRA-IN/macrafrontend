@@ -3,7 +3,7 @@ const steps = [
     number: "STEP 01",
     title: "Reserve your spot",
     description:
-      "₹399 holds a trial box from the founding batch. Fully refundable until it ships.",
+      "₹399 holds a trial box from the founding batch.",
   },
   {
     number: "STEP 02",

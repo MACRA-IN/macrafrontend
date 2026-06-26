@@ -190,7 +190,7 @@ export default function Step3Payment({ tier, plan, slotChoice, onSuccess }) {
       <div className="flex flex-wrap items-center justify-center gap-3">
         {[
           { icon: ShieldCheck, label: "Secure payment" },
-          { icon: RotateCcw,   label: "Refundable" },
+         
           { icon: Zap,         label: "Instant activation" },
         ].map(({ icon: Icon, label }) => (
           <div

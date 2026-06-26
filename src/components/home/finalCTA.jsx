@@ -28,7 +28,7 @@ export default function FinalCTA() {
               4 bowls · ₹599
             </p>
             <p className="mt-2 text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.6)" }}>
-              Free delivery · cancel anytime · refundable until first delivery.
+              Free delivery · cancel anytime · 
             </p>
             <button
               onClick={() => navigate("/subscribe")}
