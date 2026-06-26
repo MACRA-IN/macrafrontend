@@ -74,7 +74,7 @@ const TiersPreview = () => {
               return (
                 <button
                   key={tier.id}
-                  onClick={() => navigate("/subscribe")}
+                  onClick={() => navigate("/menu")}
                   className={`rounded-2xl bg-white p-4 text-left shadow-card transition-all hover:shadow-lg active:scale-[0.98] sm:p-5 ${
                     isPopular ? "border-2 border-emerald" : "border border-sage"
                   }`}

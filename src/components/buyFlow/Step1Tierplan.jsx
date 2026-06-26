@@ -7,14 +7,14 @@ import { useAuth } from "../../context/authContext";
 import { checkDeliveryArea } from "../../services/locationService";
 
 const SLOT_OPTIONS = [
-  { id: "lunch",  emoji: "☀️",  label: "Lunch",      desc: "12–2 PM",        perDay: 1 },
-  { id: "dinner", emoji: "🌙",  label: "Dinner",     desc: "6–8 PM",         perDay: 1 },
-  { id: "both",   emoji: "✨",  label: "Both",       desc: "Lunch + Dinner", perDay: 2 },
+  { id: "lunch", emoji: "☀️", label: "Lunch", desc: "12–2 PM", perDay: 1 },
+  { id: "dinner", emoji: "🌙", label: "Dinner", desc: "6–8 PM", perDay: 1 },
+  { id: "both", emoji: "✨", label: "Both", desc: "Lunch + Dinner", perDay: 2 },
 ];
 
 const PLAN_DESC = {
-  Trial:   "4 days · up to 8 bowls. Refundable before first delivery.",
-  Weekly:  "7 days · up to 12 bowls. Pause up to 3 days.",
+  Trial: "4 days · up to 8 bowls. Refundable before first delivery.",
+  Weekly: "7 days · up to 12 bowls. Pause up to 3 days.",
   Monthly: "30 days · up to 50 bowls. Lowest price per bowl.",
 };
 
@@ -22,9 +22,11 @@ const POPULAR_PLAN = "Monthly";
 
 function RadioDot({ selected }) {
   return (
-    <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 ${
-      selected ? "border-emerald bg-emerald" : "border-sage bg-white"
-    }`}>
+    <div
+      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 ${
+        selected ? "border-emerald bg-emerald" : "border-sage bg-white"
+      }`}
+    >
       {selected && <div className="h-2 w-2 rounded-full bg-white" />}
     </div>
   );
@@ -32,28 +34,37 @@ function RadioDot({ selected }) {
 
 function StepBadge({ n, done, active }) {
   return (
-    <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold transition-all duration-300 ${
-      done   ? "bg-emerald text-white"
-             : active ? "bg-forest text-white"
-             : "bg-sage/60 text-text-muted"
-    }`}>
+    <div
+      className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold transition-all duration-300 ${
+        done
+          ? "bg-emerald text-white"
+          : active
+            ? "bg-forest text-white"
+            : "bg-sage/60 text-text-muted"
+      }`}
+    >
       {done ? "✓" : n}
     </div>
   );
 }
 
 export default function Step1TierPlan({
-  tier, plan, slotChoice,
-  onSelectTier, onSelectPlan, onSelectSlot, onContinue,
+  tier,
+  plan,
+  slotChoice,
+  onSelectTier,
+  onSelectPlan,
+  onSelectSlot,
+  onContinue,
 }) {
   const { user } = useAuth();
-  const [tiers, setTiers]             = useState([]);
-  const [plans, setPlans]             = useState([]);
-  const [pricing, setPricing]         = useState(null);
-  const [loading, setLoading]         = useState(true);
+  const [tiers, setTiers] = useState([]);
+  const [plans, setPlans] = useState([]);
+  const [pricing, setPricing] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [checkingLocation, setCheckingLocation] = useState(true);
-  const [locationError, setLocationError]       = useState("");
-  const [, setCustomerLocation]       = useState(null);
+  const [locationError, setLocationError] = useState("");
+  const [, setCustomerLocation] = useState(null);
 
   useEffect(() => {
     Promise.all([getCategories(), getProducts(), getPlans()]).then(
@@ -120,7 +131,9 @@ export default function Step1TierPlan({
           const { latitude, longitude } = position.coords;
           const result = await checkDeliveryArea(latitude, longitude);
           if (!result.data.serviceable) {
-            setLocationError("Sorry, Macra is currently unavailable in your area.");
+            setLocationError(
+              "Sorry, Macra is currently unavailable in your area.",
+            );
             setCheckingLocation(false);
             return;
           }
@@ -138,7 +151,9 @@ export default function Step1TierPlan({
     );
   };
 
-  useEffect(() => { runLocationCheck(); }, []);
+  useEffect(() => {
+    runLocationCheck();
+  }, []);
 
   /* ── Location: checking ── */
   if (checkingLocation) {
@@ -226,7 +241,6 @@ export default function Step1TierPlan({
   /* ── Main form ── */
   return (
     <div className="space-y-7">
-
       {/* ── Section 1: Bowl tier ── */}
       <div>
         <div className="mb-3 flex items-center gap-2.5">
@@ -267,7 +281,9 @@ export default function Step1TierPlan({
       </div>
 
       {/* ── Section 2: Plan ── */}
-      <div className={`transition-opacity duration-300 ${tier ? "opacity-100" : "pointer-events-none opacity-35"}`}>
+      <div
+        className={`transition-opacity duration-300 ${tier ? "opacity-100" : "pointer-events-none opacity-35"}`}
+      >
         <div className="mb-3 flex items-center gap-2.5">
           <StepBadge n={2} done={!!plan} active={!!tier && !plan} />
           <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-forest">
@@ -311,7 +327,9 @@ export default function Step1TierPlan({
       </div>
 
       {/* ── Section 3: Delivery slots ── */}
-      <div className={`transition-opacity duration-300 ${plan ? "opacity-100" : "pointer-events-none opacity-35"}`}>
+      <div
+        className={`transition-opacity duration-300 ${plan ? "opacity-100" : "pointer-events-none opacity-35"}`}
+      >
         <div className="mb-3 flex items-center gap-2.5">
           <StepBadge n={3} done={!!slotChoice} active={!!plan && !slotChoice} />
           <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-forest">
@@ -363,11 +381,21 @@ export default function Step1TierPlan({
                   <span>
                     Delivery
                     {pricing.delivery_total > 0 && (
-                      <span className="ml-1 text-[10px]">({pricing.days} days × ₹{pricing.delivery_charge})</span>
+                      <span className="ml-1 text-[10px]">
+                        ({pricing.days} days × ₹{pricing.delivery_charge})
+                      </span>
                     )}
                   </span>
-                  <span className={pricing.delivery_total === 0 ? "font-semibold text-emerald" : ""}>
-                    {pricing.delivery_total === 0 ? "Free" : `₹${pricing.delivery_total}`}
+                  <span
+                    className={
+                      pricing.delivery_total === 0
+                        ? "font-semibold text-emerald"
+                        : ""
+                    }
+                  >
+                    {pricing.delivery_total === 0
+                      ? "Free"
+                      : `₹${pricing.delivery_total}`}
                   </span>
                 </div>
               </div>
@@ -397,7 +425,6 @@ export default function Step1TierPlan({
       >
         Continue to Payment →
       </button>
-
     </div>
   );
 }
