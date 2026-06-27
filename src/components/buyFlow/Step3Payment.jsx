@@ -96,6 +96,7 @@ export default function Step3Payment({ tier, plan, slotChoice, onSuccess }) {
 
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
+  if (tomorrow.getDay() === 0) tomorrow.setDate(tomorrow.getDate() + 1);
   const startStr = tomorrow.toLocaleDateString("en-IN", {
     weekday: "long",
     day: "numeric",
