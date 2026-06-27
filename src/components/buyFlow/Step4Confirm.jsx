@@ -1,11 +1,12 @@
 import { useNavigate } from "react-router-dom";
-import { Check, Calendar, Clock, Utensils } from "lucide-react";
+import { Check, Calendar, Timer, Utensils } from "lucide-react";
 
 export default function Step4Confirm({ tier, plan, orderData }) {
   const navigate = useNavigate();
 
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
+  if (tomorrow.getDay() === 0) tomorrow.setDate(tomorrow.getDate() + 1);
   const startStr = tomorrow.toLocaleDateString("en-IN", {
     weekday: "long",
     day: "numeric",
@@ -53,7 +54,7 @@ export default function Step4Confirm({ tier, plan, orderData }) {
           </div>
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-sage">
-              <Clock size={16} className="text-forest" />
+              <Timer size={16} className="text-forest" />
             </div>
             <div>
               <p className="text-xs text-text-muted">First delivery</p>
