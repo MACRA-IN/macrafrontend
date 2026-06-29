@@ -13,7 +13,7 @@ const contactSchema = {
     "@type": "LocalBusiness",
     "name": "Macra",
     "telephone": "+918309180145",
-    "email": "nanduboda13@gmail.com",
+    "email": "support@macra.in",
     "openingHours": "Mo-Sa 09:00-21:00",
     "address": {
       "@type": "PostalAddress",
@@ -35,8 +35,8 @@ const INFO = [
   {
     icon: Mail,
     label: "Email",
-    lines: ["nanduboda13@gmail.com"],
-    href: "mailto:nanduboda13@gmail.com",
+    lines: ["support@macra.in"],
+    href: "mailto:support@macra.in",
   },
   {
     icon: Phone,

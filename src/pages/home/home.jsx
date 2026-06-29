@@ -25,7 +25,7 @@ const businessSchema = {
       "description": "Subscription-based high-protein meal bowl delivery service in Hyderabad",
       "url": "https://macra.in",
       "telephone": "+918309180145",
-      "email": "nanduboda13@gmail.com",
+      "email": "support@macra.in",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "KPHB Colony",

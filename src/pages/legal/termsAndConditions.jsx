@@ -161,7 +161,7 @@ export default function TermsAndConditions() {
             <li>All activity that occurs under your account</li>
             <li>
               Immediately notifying us at{" "}
-              <strong className="text-forest">nanduboda13@gmail.com</strong> if
+              <strong className="text-forest">support@macra.in</strong> if
               you suspect any unauthorised access
             </li>
           </ul>
@@ -364,7 +364,7 @@ export default function TermsAndConditions() {
             If your payment fails, your subscription will not be activated. If
             your payment is debited but the subscription is not activated,
             please contact us at{" "}
-            <strong className="text-forest">nanduboda13@gmail.com</strong> and
+            <strong className="text-forest">support@macra.in</strong> and
             we will resolve the issue within 48 hours.
           </p>
 
@@ -459,7 +459,7 @@ export default function TermsAndConditions() {
           <p className={S.p}>
             To request a pause, use the pause feature in your account dashboard
             or contact us at{" "}
-            <strong className="text-forest">nanduboda13@gmail.com</strong> or{" "}
+            <strong className="text-forest">support@macra.in</strong> or{" "}
             <strong className="text-forest">+91 83091 80145</strong>.
           </p>
         </div>
@@ -477,7 +477,7 @@ export default function TermsAndConditions() {
             </a>{" "}
             for complete details on refund eligibility. You may cancel by using
             the cancellation option in your account dashboard, emailing{" "}
-            <strong className="text-forest">nanduboda13@gmail.com</strong>, or
+            <strong className="text-forest">support@macra.in</strong>, or
             calling <strong className="text-forest">+91 83091 80145</strong>{" "}
             during business hours.
           </p>
@@ -643,7 +643,7 @@ export default function TermsAndConditions() {
           </p>
           <p className={S.p}>
             In the event of a dispute, you agree to first contact us at{" "}
-            <strong className="text-forest">nanduboda13@gmail.com</strong> and
+            <strong className="text-forest">support@macra.in</strong> and
             attempt to resolve it informally. If unresolved, it shall be subject
             to the{" "}
             <strong className="text-forest">
@@ -678,7 +678,7 @@ export default function TermsAndConditions() {
           >
             Email:{" "}
             <span className="font-semibold text-white">
-              nanduboda13@gmail.com
+              support@macra.in
             </span>
             <br />
             Phone:{" "}

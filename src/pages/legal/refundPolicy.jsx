@@ -381,7 +381,7 @@ export default function RefundPolicy() {
               {
                 icon: "✉️",
                 title: "By Email",
-                desc: 'Email nanduboda13@gmail.com with subject: "Refund/Cancellation — [Your Name] — [Order ID]"',
+                desc: 'Email support@macra.in with subject: "Refund/Cancellation — [Your Name] — [Order ID]"',
               },
               {
                 icon: "📞",
@@ -496,7 +496,7 @@ export default function RefundPolicy() {
             <li>
               <strong className="text-forest">Step 2:</strong> Contact our
               Grievance Officer at{" "}
-              <strong className="text-forest">nanduboda13@gmail.com</strong>{" "}
+              <strong className="text-forest">support@macra.in</strong>{" "}
               with the subject "Escalated Complaint." We will respond within 5
               business days.
             </li>
@@ -543,7 +543,7 @@ export default function RefundPolicy() {
           >
             Email:{" "}
             <span className="font-semibold text-white">
-              nanduboda13@gmail.com
+              support@macra.in
             </span>
             <br />
             Phone:{" "}

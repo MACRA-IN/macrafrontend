@@ -120,7 +120,7 @@ export default function Footer() {
           style={{ color: "rgba(255,255,255,0.35)" }}
         >
           <p>© 2026 Macra · KPHB, Hyderabad, Telangana, India</p>
-          <p>nanduboda13@gmail.com · +91 83091 80145</p>
+          <p>nandu@macra.in · +91 83091 80145</p>
         </div>
       </div>
     </footer>

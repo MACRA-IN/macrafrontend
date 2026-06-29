@@ -417,7 +417,7 @@ export default function PrivacyPolicy() {
           </ul>
           <p className={S.p}>
             To exercise any of these rights, please contact us at{" "}
-            <strong className="text-forest">nanduboda13@gmail.com</strong> with
+            <strong className="text-forest">support@macra.in</strong> with
             the subject line "Data Rights Request." We will respond within 30
             days.
           </p>
@@ -466,7 +466,7 @@ export default function PrivacyPolicy() {
             do not knowingly collect personal information from children. If you
             believe your child has provided us with personal data, please
             contact us at{" "}
-            <strong className="text-forest">nanduboda13@gmail.com</strong> and
+            <strong className="text-forest">support@macra.in</strong> and
             we will promptly delete that information.
           </p>
         </div>
@@ -538,7 +538,7 @@ export default function PrivacyPolicy() {
           >
             Email:{" "}
             <span className="font-semibold text-white">
-              nanduboda13@gmail.com
+              support@macra.in
             </span>
             <br />
             Phone:{" "}

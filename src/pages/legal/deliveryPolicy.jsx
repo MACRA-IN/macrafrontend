@@ -370,7 +370,7 @@ export default function DeliveryPolicy() {
           >
             Email:{" "}
             <span className="font-semibold text-white">
-              nanduboda13@gmail.com
+              support@macra.in
             </span>
             <br />
             Phone:{" "}
