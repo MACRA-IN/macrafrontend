@@ -23,7 +23,7 @@ const PlansSection = () => {
   }, []);
 
   return (
-    <section id="plans" className="bg-sage/30 py-8 sm:py-14 lg:py-20">
+    <section id="plans" className="bg-[#D4EDD9] py-8 sm:py-14 lg:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
 
         <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-emerald-dark sm:text-sm">

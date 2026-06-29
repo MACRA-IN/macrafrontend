@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import stickerZeroExcuses from "../../assets/stickers/macra-0-excuses.png";
 
 export default function FinalCTA() {
   const navigate = useNavigate();
@@ -20,7 +21,14 @@ export default function FinalCTA() {
           </div>
 
           {/* Right: dark trial-box card */}
-          <div className="rounded-2xl bg-forest p-6 sm:p-8">
+          <div className="relative overflow-hidden rounded-2xl bg-forest p-6 sm:p-8">
+            {/* 0 Excuses sticker — top-right */}
+            <img
+              src={stickerZeroExcuses}
+              alt="0 Excuses"
+              className="absolute right-3 top-3 h-12 w-12 rounded-xl object-cover opacity-90 sm:right-4 sm:top-4 sm:h-16 sm:w-16"
+              style={{ transform: "rotate(5deg)" }}
+            />
             <p className="text-xs font-semibold uppercase tracking-widest text-emerald">
               Trial box
             </p>

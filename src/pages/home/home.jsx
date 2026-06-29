@@ -8,6 +8,12 @@ import PlansSection from "../../components/home/planSection";
 import ScienceCTA from "../../components/home/scienceCTA";
 import FinalCTA from "../../components/home/finalCTA";
 import Footer from "../../components/home/footer";
+import SectionDivider from "../../components/home/sectionDivider";
+
+const BG     = "#FAFAF7";
+const SAGE   = "#E3F2E8";
+const SAGE2  = "#D4EDD9";
+const FOREST = "#0F2B1D";
 
 const businessSchema = {
   "@context": "https://schema.org",
@@ -74,12 +80,25 @@ const Home = () => (
       structuredData={businessSchema}
     />
     <Header />
+
     <Hero />
+    <SectionDivider from={BG}     to={SAGE}   />
+
     <HowItWorks />
+    <SectionDivider from={SAGE}   to={BG}     />
+
     <TiersPreview />
+    <SectionDivider from={BG}     to={SAGE2}  />
+
     <PlansSection />
+    <SectionDivider from={SAGE2}  to={FOREST} />
+
     <ScienceCTA />
+    <SectionDivider from={FOREST} to={BG}     />
+
     <FinalCTA />
+    <SectionDivider from={BG}     to={FOREST} />
+
     <Footer />
   </div>
 );
