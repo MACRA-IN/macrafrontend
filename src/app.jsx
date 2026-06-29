@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import "./index.css";
 import Home from './pages/home/home';
 import CartPage from './pages/cart/cart';
@@ -35,26 +36,28 @@ function ProtectedRoute({ children }) {
 
 const App = () => {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/menu" element={<MenuPage />} />
-            <Route path="/cart" element={<CartPage />} />
-            <Route path="/subscribe" element={<ProtectedRoute><BuyFlow /></ProtectedRoute>} />
-            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="/privacy-policy"  element={<PrivacyPolicy />} />
-            <Route path="/terms"           element={<TermsAndConditions />} />
-            <Route path="/refund-policy"   element={<RefundPolicy />} />
-            <Route path="/delivery-policy" element={<DeliveryPolicy />} />
-            <Route path="/contact"         element={<ContactPage />} />
-            <Route path="/about"           element={<About />} />
-          </Routes>
-          <MobileNav />
-        </Router>
-      </CartProvider>
-    </AuthProvider>
+    <GoogleOAuthProvider clientId="798167571157-efpdp0mqmqnd727emppl3775jlmdbg52.apps.googleusercontent.com">
+      <AuthProvider>
+        <CartProvider>
+          <Router>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/menu" element={<MenuPage />} />
+              <Route path="/cart" element={<CartPage />} />
+              <Route path="/subscribe" element={<ProtectedRoute><BuyFlow /></ProtectedRoute>} />
+              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/privacy-policy"  element={<PrivacyPolicy />} />
+              <Route path="/terms"           element={<TermsAndConditions />} />
+              <Route path="/refund-policy"   element={<RefundPolicy />} />
+              <Route path="/delivery-policy" element={<DeliveryPolicy />} />
+              <Route path="/contact"         element={<ContactPage />} />
+              <Route path="/about"           element={<About />} />
+            </Routes>
+            <MobileNav />
+          </Router>
+        </CartProvider>
+      </AuthProvider>
+    </GoogleOAuthProvider>
   );
 };
 

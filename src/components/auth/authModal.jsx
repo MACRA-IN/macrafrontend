@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { X, Eye, EyeOff, CheckCircle2, AlertCircle } from "lucide-react";
-import { login, register } from "../../services/authService";
+import { googleAuth, login, register } from "../../services/authService";
 import { useAuth } from "../../context/authContext";
+import { GoogleLogin } from "@react-oauth/google";
 
 /* ─── Validators ─── */
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -21,24 +22,19 @@ function validateRegister({ name, email, phone, password, confirmPassword }) {
   if (!name.trim())                       e.name            = "Full name is required";
   else if (name.trim().length < 2)        e.name            = "Name must be at least 2 characters";
   else if (!/^[a-zA-Z\s]+$/.test(name))  e.name            = "Name can only contain letters";
-
   if (!email)                             e.email           = "Email is required";
   else if (!EMAIL_RE.test(email))         e.email           = "Enter a valid email address";
-
   if (phone && !PHONE_RE.test(phone))     e.phone           = "Enter a valid 10-digit mobile number";
-
   if (!password)                          e.password        = "Password is required";
   else if (password.length < 8)           e.password        = "Minimum 8 characters required";
   else if (!/(?=.*[a-z])/.test(password)) e.password        = "Include at least one lowercase letter";
   else if (!/(?=.*[A-Z])/.test(password)) e.password        = "Include at least one uppercase letter";
   else if (!/(?=.*\d)/.test(password))    e.password        = "Include at least one number";
-
   if (!confirmPassword)                   e.confirmPassword = "Please confirm your password";
   else if (password !== confirmPassword)  e.confirmPassword = "Passwords don't match";
   return e;
 }
 
-/* ─── Sub-components ─── */
 function FieldWrapper({ label, error, touched, children }) {
   return (
     <div className="flex flex-col gap-1">
@@ -61,7 +57,6 @@ const pwStrength = (pw) => [
   { ok: /\d/.test(pw),            text: "One number"            },
 ];
 
-/* ─── Main component ─── */
 export default function AuthModal({ onClose, onSuccess }) {
   const { loginUser } = useAuth();
 
@@ -73,7 +68,6 @@ export default function AuthModal({ onClose, onSuccess }) {
 
   const [lf, setLf] = useState({ email: "", password: "" });
   const [lt, setLt] = useState({});
-
   const [rf, setRf] = useState({ name: "", email: "", phone: "", password: "", confirmPassword: "" });
   const [rt, setRt] = useState({});
 
@@ -103,13 +97,26 @@ export default function AuthModal({ onClose, onSuccess }) {
     setShowConfirm(false);
   };
 
+  const handleGoogleLogin = async (credentialResponse) => {
+    setApiError("");
+    setLoading(true);
+    try {
+      const data = await googleAuth(credentialResponse.credential);
+      loginUser(data.token, data.customer);
+      onClose();
+      onSuccess?.();
+    } catch (err) {
+      setApiError("Google login failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Mark all fields touched so errors surface
     const allTouched = Object.fromEntries(Object.keys(form).map((k) => [k, true]));
     setTouched(allTouched);
     if (Object.keys(errors).length > 0) return;
-
     setApiError("");
     setLoading(true);
     try {
@@ -133,13 +140,11 @@ export default function AuthModal({ onClose, onSuccess }) {
   };
 
   return (
-    /* Backdrop */
     <div
       className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4"
       style={{ backgroundColor: "rgba(15,43,29,0.55)", backdropFilter: "blur(6px)" }}
       onClick={onClose}
     >
-      {/* Card – bottom sheet on mobile, centered on sm+ */}
       <div
         className="relative w-full max-w-md overflow-y-auto rounded-t-3xl bg-white sm:rounded-3xl"
         style={{ maxHeight: "95dvh" }}
@@ -188,18 +193,36 @@ export default function AuthModal({ onClose, onSuccess }) {
             ))}
           </div>
 
+          {/* Google Login — RIGHT AFTER TAB SWITCHER */}
+          <div className="mt-4">
+            <GoogleLogin
+              onSuccess={handleGoogleLogin}
+              onError={() => setApiError("Google login failed. Please try again.")}
+              width="100%"
+              shape="rectangular"
+              theme="outline"
+              text={isLogin ? "signin_with_google" : "signup_with_google"}
+            />
+          </div>
+
+          {/* Divider */}
+          <div className="my-4 flex items-center gap-3">
+            <div className="h-px flex-1 bg-sage/50" />
+            <span className="text-xs font-medium text-text-muted">or continue with email</span>
+            <div className="h-px flex-1 bg-sage/50" />
+          </div>
+
           {/* API error banner */}
           {apiError && (
-            <div className="mt-4 flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 px-4 py-3">
+            <div className="mb-4 flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 px-4 py-3">
               <AlertCircle size={15} className="mt-0.5 shrink-0 text-red-500" />
               <p className="text-sm text-red-600">{apiError}</p>
             </div>
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} noValidate className="mt-5 flex flex-col gap-4">
+          <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
 
-            {/* ── Name (register only) ── */}
             {!isLogin && (
               <FieldWrapper label="Full name" error={errors.name} touched={rt.name}>
                 <input
@@ -214,7 +237,6 @@ export default function AuthModal({ onClose, onSuccess }) {
               </FieldWrapper>
             )}
 
-            {/* ── Email ── */}
             <FieldWrapper label="Email address" error={errors.email} touched={touched.email}>
               <input
                 type="email"
@@ -227,7 +249,6 @@ export default function AuthModal({ onClose, onSuccess }) {
               />
             </FieldWrapper>
 
-            {/* ── Phone (register only) ── */}
             {!isLogin && (
               <FieldWrapper label="Phone number (optional)" error={errors.phone} touched={rt.phone}>
                 <div className="flex overflow-hidden rounded-xl border border-sage focus-within:border-emerald focus-within:ring-2 focus-within:ring-emerald/10">
@@ -253,7 +274,6 @@ export default function AuthModal({ onClose, onSuccess }) {
               </FieldWrapper>
             )}
 
-            {/* ── Password ── */}
             <FieldWrapper label="Password" error={errors.password} touched={touched.password}>
               <div className="relative">
                 <input
@@ -276,7 +296,6 @@ export default function AuthModal({ onClose, onSuccess }) {
               </div>
             </FieldWrapper>
 
-            {/* ── Password strength (register only) ── */}
             {!isLogin && rf.password.length > 0 && (
               <div className="grid grid-cols-2 gap-1.5 rounded-xl bg-sage/30 px-4 py-3">
                 {pwStrength(rf.password).map(({ ok, text }) => (
@@ -296,7 +315,6 @@ export default function AuthModal({ onClose, onSuccess }) {
               </div>
             )}
 
-            {/* ── Confirm password (register only) ── */}
             {!isLogin && (
               <FieldWrapper label="Confirm password" error={errors.confirmPassword} touched={rt.confirmPassword}>
                 <div className="relative">
@@ -321,7 +339,6 @@ export default function AuthModal({ onClose, onSuccess }) {
               </FieldWrapper>
             )}
 
-            {/* ── Submit ── */}
             <button
               type="submit"
               disabled={loading}
