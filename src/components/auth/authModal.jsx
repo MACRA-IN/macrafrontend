@@ -2,7 +2,7 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import { googleAuth, login, register } from "../../services/authService";
 import { useAuth } from "../../context/authContext";
-import ForgotPasswordView from "./ForgotPasswordView";
+import ForgotPasswordView from "./forgotPasswordView";
 import LoginForm from "./loginForm";
 import RegisterForm from "./registerForm";
 
