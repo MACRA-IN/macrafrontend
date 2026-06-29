@@ -21,3 +21,13 @@ export const googleAuth = async (credential) => {
   });
   return res.data;
 };
+
+export const forgotPassword = async (email) => {
+  const res = await apiClient.post("/api/customers/forgot-password", { email });
+  return res.data;
+};
+
+export const resetPassword = async (token, password) => {
+  const res = await apiClient.post("/api/customers/reset-password", { token, password });
+  return res.data;
+};

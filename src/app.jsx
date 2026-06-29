@@ -17,6 +17,7 @@ import MobileNav from './components/home/mobileNav';
 import { AuthProvider, useAuth } from './context/authContext';
 import { CartProvider } from './context/cartContext';
 import AuthModal from './components/auth/authModal';
+import ResetPassword from './components/auth/resetPassword';
 
 function ProtectedRoute({ children }) {
   const { user, loginUser } = useAuth();
@@ -48,6 +49,7 @@ const App = () => {
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/privacy-policy"  element={<PrivacyPolicy />} />
               <Route path="/terms"           element={<TermsAndConditions />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/refund-policy"   element={<RefundPolicy />} />
               <Route path="/delivery-policy" element={<DeliveryPolicy />} />
               <Route path="/contact"         element={<ContactPage />} />
