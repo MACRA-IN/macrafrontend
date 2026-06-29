@@ -10,28 +10,35 @@ const PHONE_RE = /^[6-9]\d{9}$/;
 
 function validateLogin({ email, password }) {
   const e = {};
-  if (!email)                          e.email    = "Email is required";
-  else if (!EMAIL_RE.test(email))      e.email    = "Enter a valid email address";
-  if (!password)                       e.password = "Password is required";
-  else if (password.length < 6)        e.password = "Minimum 6 characters";
+  if (!email) e.email = "Email is required";
+  else if (!EMAIL_RE.test(email)) e.email = "Enter a valid email address";
+  if (!password) e.password = "Password is required";
+  else if (password.length < 6) e.password = "Minimum 6 characters";
   return e;
 }
 
 function validateRegister({ name, email, phone, password, confirmPassword }) {
   const e = {};
-  if (!name.trim())                       e.name            = "Full name is required";
-  else if (name.trim().length < 2)        e.name            = "Name must be at least 2 characters";
-  else if (!/^[a-zA-Z\s]+$/.test(name))  e.name            = "Name can only contain letters";
-  if (!email)                             e.email           = "Email is required";
-  else if (!EMAIL_RE.test(email))         e.email           = "Enter a valid email address";
-  if (phone && !PHONE_RE.test(phone))     e.phone           = "Enter a valid 10-digit mobile number";
-  if (!password)                          e.password        = "Password is required";
-  else if (password.length < 8)           e.password        = "Minimum 8 characters required";
-  else if (!/(?=.*[a-z])/.test(password)) e.password        = "Include at least one lowercase letter";
-  else if (!/(?=.*[A-Z])/.test(password)) e.password        = "Include at least one uppercase letter";
-  else if (!/(?=.*\d)/.test(password))    e.password        = "Include at least one number";
-  if (!confirmPassword)                   e.confirmPassword = "Please confirm your password";
-  else if (password !== confirmPassword)  e.confirmPassword = "Passwords don't match";
+  if (!name.trim()) e.name = "Full name is required";
+  else if (name.trim().length < 2)
+    e.name = "Name must be at least 2 characters";
+  else if (!/^[a-zA-Z\s]+$/.test(name))
+    e.name = "Name can only contain letters";
+  if (!email) e.email = "Email is required";
+  else if (!EMAIL_RE.test(email)) e.email = "Enter a valid email address";
+  if (phone && !PHONE_RE.test(phone))
+    e.phone = "Enter a valid 10-digit mobile number";
+  if (!password) e.password = "Password is required";
+  else if (password.length < 8) e.password = "Minimum 8 characters required";
+  else if (!/(?=.*[a-z])/.test(password))
+    e.password = "Include at least one lowercase letter";
+  else if (!/(?=.*[A-Z])/.test(password))
+    e.password = "Include at least one uppercase letter";
+  else if (!/(?=.*\d)/.test(password))
+    e.password = "Include at least one number";
+  if (!confirmPassword) e.confirmPassword = "Please confirm your password";
+  else if (password !== confirmPassword)
+    e.confirmPassword = "Passwords don't match";
   return e;
 }
 
@@ -51,34 +58,40 @@ function FieldWrapper({ label, error, touched, children }) {
 }
 
 const pwStrength = (pw) => [
-  { ok: pw.length >= 8,           text: "At least 8 characters" },
-  { ok: /[A-Z]/.test(pw),         text: "One uppercase letter"  },
-  { ok: /[a-z]/.test(pw),         text: "One lowercase letter"  },
-  { ok: /\d/.test(pw),            text: "One number"            },
+  { ok: pw.length >= 8, text: "At least 8 characters" },
+  { ok: /[A-Z]/.test(pw), text: "One uppercase letter" },
+  { ok: /[a-z]/.test(pw), text: "One lowercase letter" },
+  { ok: /\d/.test(pw), text: "One number" },
 ];
 
 export default function AuthModal({ onClose, onSuccess }) {
   const { loginUser } = useAuth();
 
-  const [tab,         setTab]         = useState("login");
-  const [loading,     setLoading]     = useState(false);
-  const [apiError,    setApiError]    = useState("");
-  const [showPw,      setShowPw]      = useState(false);
+  const [tab, setTab] = useState("login");
+  const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState("");
+  const [showPw, setShowPw] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
   const [lf, setLf] = useState({ email: "", password: "" });
   const [lt, setLt] = useState({});
-  const [rf, setRf] = useState({ name: "", email: "", phone: "", password: "", confirmPassword: "" });
+  const [rf, setRf] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+  });
   const [rt, setRt] = useState({});
 
-  const isLogin    = tab === "login";
-  const form       = isLogin ? lf  : rf;
-  const touched    = isLogin ? lt  : rt;
-  const setForm    = isLogin ? setLf : setRf;
+  const isLogin = tab === "login";
+  const form = isLogin ? lf : rf;
+  const touched = isLogin ? lt : rt;
+  const setForm = isLogin ? setLf : setRf;
   const setTouched = isLogin ? setLt : setRt;
-  const errors     = isLogin ? validateLogin(lf) : validateRegister(rf);
+  const errors = isLogin ? validateLogin(lf) : validateRegister(rf);
 
-  const touch  = (field) => setTouched((t) => ({ ...t, [field]: true }));
+  const touch = (field) => setTouched((t) => ({ ...t, [field]: true }));
   const update = (field, value) => setForm((f) => ({ ...f, [field]: value }));
 
   const inputCls = (field) =>
@@ -114,7 +127,9 @@ export default function AuthModal({ onClose, onSuccess }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const allTouched = Object.fromEntries(Object.keys(form).map((k) => [k, true]));
+    const allTouched = Object.fromEntries(
+      Object.keys(form).map((k) => [k, true]),
+    );
     setTouched(allTouched);
     if (Object.keys(errors).length > 0) return;
     setApiError("");
@@ -124,15 +139,25 @@ export default function AuthModal({ onClose, onSuccess }) {
       if (isLogin) {
         data = await login(lf.email, lf.password);
       } else {
-        data = await register({ name: rf.name, email: rf.email, password: rf.password, phone: rf.phone });
+        data = await register({
+          name: rf.name,
+          email: rf.email,
+          password: rf.password,
+          phone: rf.phone,
+        });
       }
-      loginUser(data.token, data.customer ?? data.user ?? { email: form.email });
+      loginUser(
+        data.token,
+        data.customer ?? data.user ?? { email: form.email },
+      );
       onClose();
       onSuccess?.();
     } catch (err) {
       setApiError(
         err?.response?.data?.message ||
-        (isLogin ? "Invalid email or password." : "Registration failed. Please try again.")
+          (isLogin
+            ? "Invalid email or password."
+            : "Registration failed. Please try again."),
       );
     } finally {
       setLoading(false);
@@ -142,7 +167,10 @@ export default function AuthModal({ onClose, onSuccess }) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4"
-      style={{ backgroundColor: "rgba(15,43,29,0.55)", backdropFilter: "blur(6px)" }}
+      style={{
+        backgroundColor: "rgba(15,43,29,0.55)",
+        backdropFilter: "blur(6px)",
+      }}
       onClick={onClose}
     >
       <div
@@ -156,7 +184,6 @@ export default function AuthModal({ onClose, onSuccess }) {
         </div>
 
         <div className="px-6 pb-8 pt-5 sm:px-8 sm:pb-8 sm:pt-7">
-
           {/* Close */}
           <button
             onClick={onClose}
@@ -177,7 +204,10 @@ export default function AuthModal({ onClose, onSuccess }) {
 
           {/* Tab switcher */}
           <div className="mt-5 flex rounded-xl bg-sage/40 p-1">
-            {[["login", "Log in"], ["register", "Sign up"]].map(([t, label]) => (
+            {[
+              ["login", "Log in"],
+              ["register", "Sign up"],
+            ].map(([t, label]) => (
               <button
                 key={t}
                 type="button"
@@ -194,11 +224,14 @@ export default function AuthModal({ onClose, onSuccess }) {
           </div>
 
           {/* Google Login — RIGHT AFTER TAB SWITCHER */}
-          <div className="mt-4">
+          {/* Google Login */}
+          <div className="mt-4 flex justify-center">
             <GoogleLogin
               onSuccess={handleGoogleLogin}
-              onError={() => setApiError("Google login failed. Please try again.")}
-              width="100%"
+              onError={() =>
+                setApiError("Google login failed. Please try again.")
+              }
+              width="400"
               shape="rectangular"
               theme="outline"
               text={isLogin ? "signin_with_google" : "signup_with_google"}
@@ -208,7 +241,9 @@ export default function AuthModal({ onClose, onSuccess }) {
           {/* Divider */}
           <div className="my-4 flex items-center gap-3">
             <div className="h-px flex-1 bg-sage/50" />
-            <span className="text-xs font-medium text-text-muted">or continue with email</span>
+            <span className="text-xs font-medium text-text-muted">
+              or continue with email
+            </span>
             <div className="h-px flex-1 bg-sage/50" />
           </div>
 
@@ -221,10 +256,17 @@ export default function AuthModal({ onClose, onSuccess }) {
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
-
+          <form
+            onSubmit={handleSubmit}
+            noValidate
+            className="flex flex-col gap-4"
+          >
             {!isLogin && (
-              <FieldWrapper label="Full name" error={errors.name} touched={rt.name}>
+              <FieldWrapper
+                label="Full name"
+                error={errors.name}
+                touched={rt.name}
+              >
                 <input
                   type="text"
                   placeholder="Enter Your Name"
@@ -237,7 +279,11 @@ export default function AuthModal({ onClose, onSuccess }) {
               </FieldWrapper>
             )}
 
-            <FieldWrapper label="Email address" error={errors.email} touched={touched.email}>
+            <FieldWrapper
+              label="Email address"
+              error={errors.email}
+              touched={touched.email}
+            >
               <input
                 type="email"
                 placeholder="you@example.com"
@@ -250,7 +296,11 @@ export default function AuthModal({ onClose, onSuccess }) {
             </FieldWrapper>
 
             {!isLogin && (
-              <FieldWrapper label="Phone number (optional)" error={errors.phone} touched={rt.phone}>
+              <FieldWrapper
+                label="Phone number (optional)"
+                error={errors.phone}
+                touched={rt.phone}
+              >
                 <div className="flex overflow-hidden rounded-xl border border-sage focus-within:border-emerald focus-within:ring-2 focus-within:ring-emerald/10">
                   <span className="flex items-center border-r border-sage bg-sage/30 px-3 text-sm font-medium text-text-muted">
                     +91
@@ -261,24 +311,33 @@ export default function AuthModal({ onClose, onSuccess }) {
                     autoComplete="tel"
                     maxLength={10}
                     value={rf.phone}
-                    onChange={(e) => update("phone", e.target.value.replace(/\D/g, ""))}
+                    onChange={(e) =>
+                      update("phone", e.target.value.replace(/\D/g, ""))
+                    }
                     onBlur={() => touch("phone")}
                     className="min-w-0 flex-1 bg-white px-4 py-3 text-sm text-forest outline-none"
                   />
                 </div>
                 {rt.phone && errors.phone && (
                   <p className="mt-1 flex items-center gap-1 text-xs text-red-500">
-                    <AlertCircle size={11} className="shrink-0" /> {errors.phone}
+                    <AlertCircle size={11} className="shrink-0" />{" "}
+                    {errors.phone}
                   </p>
                 )}
               </FieldWrapper>
             )}
 
-            <FieldWrapper label="Password" error={errors.password} touched={touched.password}>
+            <FieldWrapper
+              label="Password"
+              error={errors.password}
+              touched={touched.password}
+            >
               <div className="relative">
                 <input
                   type={showPw ? "text" : "password"}
-                  placeholder={isLogin ? "Your password" : "Create a strong password"}
+                  placeholder={
+                    isLogin ? "Your password" : "Create a strong password"
+                  }
                   autoComplete={isLogin ? "current-password" : "new-password"}
                   value={form.password}
                   onChange={(e) => update("password", e.target.value)}
@@ -316,7 +375,11 @@ export default function AuthModal({ onClose, onSuccess }) {
             )}
 
             {!isLogin && (
-              <FieldWrapper label="Confirm password" error={errors.confirmPassword} touched={rt.confirmPassword}>
+              <FieldWrapper
+                label="Confirm password"
+                error={errors.confirmPassword}
+                touched={rt.confirmPassword}
+              >
                 <div className="relative">
                   <input
                     type={showConfirm ? "text" : "password"}
@@ -345,16 +408,34 @@ export default function AuthModal({ onClose, onSuccess }) {
               className="mt-1 flex w-full items-center justify-center gap-2 rounded-full bg-emerald py-3.5 font-heading font-semibold text-white transition-colors hover:bg-emerald-dark disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading && (
-                <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                <svg
+                  className="h-4 w-4 animate-spin"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v8z"
+                  />
                 </svg>
               )}
               {loading
-                ? (isLogin ? "Logging in…" : "Creating account…")
-                : (isLogin ? "Log in" : "Create account")}
+                ? isLogin
+                  ? "Logging in…"
+                  : "Creating account…"
+                : isLogin
+                  ? "Log in"
+                  : "Create account"}
             </button>
-
           </form>
 
           {/* Switch tab */}
@@ -368,7 +449,6 @@ export default function AuthModal({ onClose, onSuccess }) {
               {isLogin ? "Sign up free" : "Log in"}
             </button>
           </p>
-
         </div>
       </div>
     </div>
