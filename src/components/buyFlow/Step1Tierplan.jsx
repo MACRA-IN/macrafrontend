@@ -241,6 +241,23 @@ export default function Step1TierPlan({
   /* ── Main form ── */
   return (
     <div className="space-y-7">
+
+      {/* Delivery confirmed badge */}
+      <div
+        className="flex items-center gap-2.5 rounded-2xl border px-4 py-3"
+        style={{ background: "rgba(44,211,119,0.08)", borderColor: "rgba(44,211,119,0.30)" }}
+      >
+        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald">
+          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+            <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+        <p className="text-xs font-semibold text-emerald">
+          We deliver to your area{" "}
+          <span className="font-normal text-text-muted">· pick your setup below</span>
+        </p>
+      </div>
+
       {/* ── Section 1: Bowl tier ── */}
       <div>
         <div className="mb-3 flex items-center gap-2.5">
@@ -265,9 +282,15 @@ export default function Step1TierPlan({
                 <p className="font-heading text-sm font-bold text-forest">
                   {t.name}
                 </p>
-                <p className="text-[11px] text-text-muted">
-                  ~{t.avgProtein}g protein
-                </p>
+                <div className="mt-1 flex items-center gap-2">
+                  <div className="h-1 w-16 overflow-hidden rounded-full bg-sage">
+                    <div
+                      className="h-1 rounded-full bg-emerald"
+                      style={{ width: `${Math.min((t.avgProtein / 50) * 100, 100)}%` }}
+                    />
+                  </div>
+                  <p className="text-[11px] text-text-muted">~{t.avgProtein}g protein</p>
+                </div>
               </div>
               <div className="text-right">
                 <p className="font-heading text-base font-bold text-emerald">
@@ -341,17 +364,17 @@ export default function Step1TierPlan({
             <button
               key={s.id}
               onClick={() => onSelectSlot(s.id)}
-              className={`flex flex-col items-center rounded-2xl p-3 text-center transition-all duration-200 ${
+              className={`flex flex-col items-center rounded-2xl py-4 px-2 text-center transition-all duration-200 ${
                 slotChoice === s.id
                   ? "border-2 border-emerald bg-sage/20 shadow-sm"
                   : "border border-sage bg-white hover:border-emerald/40 hover:bg-sage/10"
               }`}
             >
-              <span className="text-lg">{s.emoji}</span>
-              <p className="mt-1 font-heading text-xs font-bold text-forest">
+              <span className="text-2xl">{s.emoji}</span>
+              <p className="mt-2 font-heading text-xs font-bold text-forest">
                 {s.label}
               </p>
-              <p className="text-[10px] text-text-muted">{s.desc}</p>
+              <p className="mt-0.5 text-[10px] leading-tight text-text-muted">{s.desc}</p>
             </button>
           ))}
         </div>
@@ -421,9 +444,10 @@ export default function Step1TierPlan({
       <button
         onClick={onContinue}
         disabled={!tier || !plan || !slotChoice || !pricing}
-        className="w-full rounded-full bg-emerald py-3.5 font-heading text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-emerald-dark active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
+        className="w-full rounded-full py-4 font-heading text-sm font-semibold text-white shadow-md transition-all duration-200 hover:scale-[1.01] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
+        style={{ background: "linear-gradient(135deg, #2CD377 0%, #16A85E 100%)" }}
       >
-        Continue to Payment →
+        Continue to Delivery →
       </button>
     </div>
   );
