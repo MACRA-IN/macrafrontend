@@ -19,7 +19,6 @@ export const getPublicPlans = async () => {
   }
 };
 
-
 export const calculatePrice = async (categoryId, planId, slotsPerDay) => {
   try {
     const res = await apiClient.get("/api/subscription/calculate-price", {
@@ -37,7 +36,9 @@ export const calculatePrice = async (categoryId, planId, slotsPerDay) => {
 };
 
 export const fillMealPlanner = async (slots) => {
-  const res = await apiClient.post("/api/subscription/meal-planner/fill", { slots });
+  const res = await apiClient.post("/api/subscription/meal-planner/fill", {
+    slots,
+  });
   return res.data;
 };
 
@@ -66,9 +67,27 @@ export const getMySubscription = async () => {
   }
 };
 
+export const pauseSubscription = async (subscriptionId, dates) => {
+  const res = await apiClient.post(
+    `/api/subscription/${subscriptionId}/pause`,
+    { dates },
+  );
+  return res.data;
+};
+
+export const resumeSubscription = async (subscriptionId, dates) => {
+  const res = await apiClient.post(
+    `/api/subscription/${subscriptionId}/resume`,
+    { dates },
+  );
+  return res.data;
+};
+
 export default {
   getPlans,
   calculatePrice,
   fillMealPlanner,
   createSubscription,
+  pauseSubscription,
+  resumeSubscription,
 };
