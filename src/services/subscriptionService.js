@@ -83,6 +83,28 @@ export const resumeSubscription = async (subscriptionId, dates) => {
   return res.data;
 };
 
+export const createRenewalOrder = async (newPlanId) => {
+  try {
+    const res = await apiClient.post("/api/payments/renew", {
+      new_plan_id: newPlanId,
+    });
+    return res.data.data;
+  } catch (err) {
+    console.error("createRenewalOrder error:", err);
+    throw err;
+  }
+};
+
+export const verifyRenewal = async (payload) => {
+  try {
+    const res = await apiClient.post("/api/payments/renew/verify", payload);
+    return res.data.data;
+  } catch (err) {
+    console.error("verifyRenewal error:", err);
+    throw err;
+  }
+};
+
 export default {
   getPlans,
   calculatePrice,
@@ -90,4 +112,6 @@ export default {
   createSubscription,
   pauseSubscription,
   resumeSubscription,
+  createRenewalOrder,
+  verifyRenewal,
 };

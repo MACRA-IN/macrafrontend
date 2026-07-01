@@ -1,11 +1,11 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { GoogleMap, useJsApiLoader, MarkerF } from "@react-google-maps/api";
 import { updateAddress } from "../../services/addressService";
 import { checkDeliveryArea } from "../../services/locationService";
-import { Navigation } from "lucide-react";
+import { Navigation, Search, X } from "lucide-react";
 import getMacOptions from "../../utils/macUtils";
 
-const DEFAULT_CENTER = { lat: 17.4875, lng: 78.3953 }; // just for initial map view
+const DEFAULT_CENTER = { lat: 17.4875, lng: 78.3953 };
 
 export default function Step2Address({ onContinue }) {
   const [position, setPosition] = useState(DEFAULT_CENTER);
@@ -17,10 +17,15 @@ export default function Step2Address({ onContinue }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [located, setLocated] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [searching, setSearching] = useState(false);
   const mapRef = useRef(null);
+  const searchDebounceRef = useRef(null);
 
-  const mac = getMacOptions()
-const googleMapskey = mac.GOOGLE_MAPS_API_KEY
+  const mac = getMacOptions();
+  const googleMapskey = mac.GOOGLE_MAPS_API_KEY;
+  
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: googleMapskey,
   });
@@ -34,7 +39,6 @@ const googleMapskey = mac.GOOGLE_MAPS_API_KEY
     });
   }, []);
 
-  // Just call YOUR backend — it knows the kitchen location + radius
   const checkZone = useCallback(async (lat, lng) => {
     setChecking(true);
     setDeliveryCheck(null);
@@ -48,8 +52,54 @@ const googleMapskey = mac.GOOGLE_MAPS_API_KEY
     reverseGeocode(lat, lng);
     checkZone(lat, lng);
     setLocated(true);
+    setSearchResults([]);
+    setSearchInput("");
     if (mapRef.current) mapRef.current.panTo({ lat, lng });
   }, [reverseGeocode, checkZone]);
+
+  const searchSeqRef = useRef(0);
+
+  const handleSearchChange = (e) => {
+    const query = e.target.value;
+    setSearchInput(query);
+    clearTimeout(searchDebounceRef.current);
+
+    if (!query.trim()) {
+      setSearchResults([]);
+      setSearching(false);
+      return;
+    }
+
+    if (!window.google?.maps) return;
+
+    setSearching(true);
+    const seq = ++searchSeqRef.current;
+    searchDebounceRef.current = setTimeout(() => {
+      const geocoder = new window.google.maps.Geocoder();
+      geocoder.geocode({ address: query + ", Hyderabad" }, (results, status) => {
+        if (seq !== searchSeqRef.current) return; // stale response — discard
+        if (status === "OK" && results) {
+          setSearchResults(
+            results.slice(0, 5).map((r) => ({
+              label: r.formatted_address,
+              lat: r.geometry.location.lat(),
+              lng: r.geometry.location.lng(),
+            }))
+          );
+        } else {
+          setSearchResults([]);
+        }
+        setSearching(false);
+      });
+    }, 450);
+  };
+
+  useEffect(() => () => clearTimeout(searchDebounceRef.current), []);
+
+  // Select a search result
+  const selectSearchResult = (result) => {
+    handleLocationSelect(result.lat, result.lng);
+  };
 
   const locateMe = () => {
     if (!navigator.geolocation) return;
@@ -100,6 +150,48 @@ const googleMapskey = mac.GOOGLE_MAPS_API_KEY
       {/* Title */}
       <div className="px-6 pt-6 sm:px-10 sm:pt-10">
         <h2 className="font-heading text-xl font-bold text-forest">Add address details</h2>
+      </div>
+
+      {/* Search input */}
+      <div className="relative px-6 pt-4 sm:px-10">
+        <div className="relative">
+          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+          <input
+            type="text"
+            value={searchInput}
+            onChange={handleSearchChange}
+            placeholder="Search address..."
+            className="w-full rounded-xl bg-sage/20 py-3.5 pl-10 pr-10 text-sm text-forest outline-none transition-colors focus:ring-1 focus:ring-emerald"
+          />
+          {searchInput && (
+            <button
+              onClick={() => {
+                setSearchInput("");
+                setSearchResults([]);
+              }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-forest"
+            >
+              <X size={16} />
+            </button>
+          )}
+        </div>
+
+        {/* Search results dropdown */}
+        {searchResults.length > 0 && (
+          <div className="absolute left-6 right-6 top-full z-50 mt-1 rounded-xl border border-sage bg-white shadow-lg sm:left-10 sm:right-10">
+            {searchResults.map((result, idx) => (
+              <button
+                key={idx}
+                onClick={() => selectSearchResult(result)}
+                className="w-full border-b border-sage/30 px-4 py-3 text-left text-sm text-forest hover:bg-sage/20 last:border-b-0"
+              >
+                {result.label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {searching && <p className="mt-2 text-xs text-text-muted">Searching...</p>}
       </div>
 
       {/* Map */}
