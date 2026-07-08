@@ -41,6 +41,11 @@ export default function Dashboard() {
     loadSubscription();
   };
 
+  const handleLogout = () => {
+    logoutUser();
+    navigate("/");
+  };
+
   if (loading) {
     return (
       <div>
@@ -57,7 +62,7 @@ export default function Dashboard() {
       <div>
         {DASHBOARD_SEO}
         <Header />
-        <DashboardEmptyState onLogout={logoutUser} />
+        <DashboardEmptyState onLogout={handleLogout} />
         <Footer />
       </div>
     );
@@ -108,7 +113,7 @@ export default function Dashboard() {
         {/* Mobile logout */}
         <div className="mt-8 flex items-center justify-center border-t border-sage pt-5 md:hidden">
           <button
-            onClick={logoutUser}
+            onClick={handleLogout}
             className="flex items-center gap-1.5 rounded-full px-4 py-2 text-sm text-text-muted transition-colors hover:bg-sage/40 hover:text-forest"
           >
             <LogOut size={14} /> Log out

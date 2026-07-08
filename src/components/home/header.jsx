@@ -13,6 +13,7 @@ const Header = () => {
 
   const openAuthWithRedirect = (route) => { setPostLoginRoute(route); setShowAuth(true); };
   const handleAuthSuccess = () => { if (postLoginRoute) { navigate(postLoginRoute); setPostLoginRoute(null); } };
+  const handleLogout = () => { logoutUser(); navigate("/"); };
 
   const navLinks = [
     { href: "/menu",     label: "Menu" },
@@ -58,7 +59,7 @@ const Header = () => {
                   {user.name ?? user.email}
                 </button>
                 <button
-                  onClick={logoutUser}
+                  onClick={handleLogout}
                   className="flex items-center gap-1.5 rounded-full border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
                 >
                   <LogOut size={14} /> Log out

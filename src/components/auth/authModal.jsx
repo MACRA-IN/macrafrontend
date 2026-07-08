@@ -1,16 +1,20 @@
 import { useState } from "react";
 import { X } from "lucide-react";
-import { googleAuth, login, register } from "../../services/authService";
+import { googleAuth, login, register, updateCustomerPhone } from "../../services/authService";
 import { useAuth } from "../../context/authContext";
 import ForgotPasswordView from "./forgotPasswordView";
 import LoginForm from "./loginForm";
 import RegisterForm from "./registerForm";
+import PhoneModal from "./phoneModal";
 
 export default function AuthModal({ onClose, onSuccess }) {
   const { loginUser } = useAuth();
   const [tab,      setTab]      = useState("login");
   const [loading,  setLoading]  = useState(false);
   const [apiError, setApiError] = useState("");
+  const [showPhoneModal, setShowPhoneModal] = useState(false);
+  const [tempToken, setTempToken] = useState(null);
+  const [tempCustomer, setTempCustomer] = useState(null);
 
   const switchTab = (t) => { setTab(t); setApiError(""); };
 
@@ -18,14 +22,37 @@ export default function AuthModal({ onClose, onSuccess }) {
     setApiError(""); setLoading(true);
     try {
       const data = await googleAuth(credentialResponse.credential);
-      loginUser(data.token, data.customer);
-      onClose(); onSuccess?.();
+      if (!data.customer.phone) {
+        setShowPhoneModal(true);
+        setTempToken(data.token);
+        setTempCustomer(data.customer);
+      } else {
+        loginUser(data.token, data.customer);
+        onClose(); onSuccess?.();
+      }
     } catch {
       setApiError("Google login failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
+
+ const handlePhoneSubmit = async (phone) => {
+  try {
+    // Store token FIRST (so updateCustomerPhone can access it)
+    loginUser(tempToken, tempCustomer);
+    
+    // THEN call update phone (now token is in localStorage)
+    await updateCustomerPhone(phone);
+    
+    // THEN close and redirect
+    setShowPhoneModal(false);
+    onClose();
+    onSuccess?.();
+  } catch (err) {
+    throw new Error("Failed to save phone");
+  }
+};
 
   const handleLogin = async (form) => {
     setApiError(""); setLoading(true);
@@ -55,7 +82,7 @@ export default function AuthModal({ onClose, onSuccess }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4"
+      className="fixed inset-0 z-60 flex items-end justify-center sm:items-center sm:p-4"
       style={{ backgroundColor: "rgba(15,43,29,0.55)", backdropFilter: "blur(6px)" }}
       onClick={onClose}
     >
@@ -120,6 +147,13 @@ export default function AuthModal({ onClose, onSuccess }) {
           )}
         </div>
       </div>
+
+      {showPhoneModal && (
+        <PhoneModal
+          onSubmit={handlePhoneSubmit}
+          onClose={() => setShowPhoneModal(false)}
+        />
+      )}
     </div>
   );
 }
