@@ -5,6 +5,7 @@ import { getProducts } from "../../services/productService";
 import { getPlans, calculatePrice } from "../../services/subscriptionService";
 import { useAuth } from "../../context/authContext";
 import { checkDeliveryArea } from "../../services/locationService";
+import VegBadge from "../common/VegBadge";
 
 const SLOT_OPTIONS = [
   { id: "lunch", emoji: "☀️", label: "Lunch", desc: "12–2 PM", perDay: 1 },
@@ -89,6 +90,8 @@ export default function Step1TierPlan({
                         ) / bowls.length,
                       )
                     : 0,
+                hasVeg: bowls.some((b) => b.is_veg),
+                hasNonVeg: bowls.some((b) => !b.is_veg),
               };
             });
           setTiers(result);
@@ -279,9 +282,16 @@ export default function Step1TierPlan({
             >
               <RadioDot selected={tier?.id === t.id} />
               <div className="min-w-0 flex-1">
-                <p className="font-heading text-sm font-bold text-forest">
-                  {t.name}
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="font-heading text-sm font-bold text-forest">
+                    {t.name}
+                  </p>
+                  <span className="flex items-center gap-1 rounded-full border border-sage bg-white px-1.5 py-0.5 text-[9px] font-semibold text-text-muted">
+                    {t.hasVeg && <VegBadge isVeg size={10} />}
+                    {t.hasNonVeg && <VegBadge isVeg={false} size={10} />}
+                    {t.hasVeg && t.hasNonVeg ? "Veg & Non-veg" : t.hasVeg ? "Veg only" : "Non-veg only"}
+                  </span>
+                </div>
                 <div className="mt-1 flex items-center gap-2">
                   <div className="h-1 w-16 overflow-hidden rounded-full bg-sage">
                     <div

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Plus, Minus, Loader2 } from "lucide-react";
 import { useCart } from "../../context/cartContext";
+import VegBadge from "../common/VegBadge";
 
 export default function BowlCard({ bowl }) {
   const { cartItems, addToCart, updateCartItem } = useCart();
@@ -49,7 +50,10 @@ export default function BowlCard({ bowl }) {
       </div>
 
       <div className="p-5">
-        <h3 className="font-heading text-xl font-bold text-forest">{bowl.name}</h3>
+        <div className="flex items-center gap-2">
+          <VegBadge isVeg={bowl.is_veg} size={15} />
+          <h3 className="font-heading text-xl font-bold text-forest">{bowl.name}</h3>
+        </div>
 
         <div className="mt-3 space-y-1">
           {bowl.description && (

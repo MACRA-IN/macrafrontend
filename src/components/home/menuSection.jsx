@@ -103,6 +103,7 @@ const menuSchema = {
 import Footer from "../../components/home/footer";
 import { getCategories } from "../../services/categoryService";
 import { getProducts } from "../../services/productService";
+import VegBadge from "../common/VegBadge";
 
 function BowlCardSkeleton() {
   return (
@@ -151,6 +152,8 @@ export default function MenuPage() {
                       ) / bowls.length,
                     )
                   : 0,
+              hasVeg: bowls.some((b) => b.is_veg),
+              hasNonVeg: bowls.some((b) => !b.is_veg),
               bowls,
             };
           });
@@ -212,6 +215,11 @@ export default function MenuPage() {
                   <span className="rounded-full bg-emerald px-3 py-0.5 font-heading text-xs font-bold text-white">
                     ₹{tier.price.toFixed(0)} / bowl
                   </span>
+                  <span className="flex items-center gap-1.5 rounded-full border border-sage bg-white px-3 py-0.5 text-xs font-semibold text-forest">
+                    {tier.hasVeg && <VegBadge isVeg size={12} />}
+                    {tier.hasNonVeg && <VegBadge isVeg={false} size={12} />}
+                    {tier.hasVeg && tier.hasNonVeg ? "Veg & Non-veg" : tier.hasVeg ? "Veg only" : "Non-veg only"}
+                  </span>
                 </div>
                 <p className="mt-1 text-sm text-text-muted">
                   ~{tier.avgProtein}g protein
@@ -243,9 +251,12 @@ export default function MenuPage() {
                       </div>
 
                       <div className="p-4">
-                        <h3 className="font-heading text-base font-bold text-forest">
-                          {bowl.name}
-                        </h3>
+                        <div className="flex items-center gap-1.5">
+                          <VegBadge isVeg={bowl.is_veg} size={13} />
+                          <h3 className="font-heading text-base font-bold text-forest">
+                            {bowl.name}
+                          </h3>
+                        </div>
                         <p className="mt-1.5 text-xs font-semibold text-emerald">
                           {bowl.calories} kcal ·{" "}
                           {parseFloat(bowl.protein_g).toFixed(0)}g protein ·{" "}

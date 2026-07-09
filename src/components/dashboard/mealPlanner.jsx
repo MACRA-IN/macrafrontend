@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Check, X } from "lucide-react";
 import { getProducts } from "../../services/productService";
 import { fillMealPlanner } from "../../services/subscriptionService";
+import VegBadge from "../common/VegBadge";
 
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -159,7 +160,10 @@ export default function MealPlanner({ subscription }) {
                 >
                   {filled ? (
                     <div className="text-center leading-tight">
-                      <p className="text-xs font-semibold">{filled.product_name}</p>
+                      <div className="flex items-center justify-center gap-1">
+                        <VegBadge isVeg={bowls.find((b) => b.id === filled.product_id)?.is_veg} size={10} />
+                        <p className="text-xs font-semibold">{filled.product_name}</p>
+                      </div>
                       <p className="mt-0.5 text-[10px] font-normal text-emerald-dark">✓ tap to clear</p>
                     </div>
                   ) : (
@@ -193,7 +197,10 @@ export default function MealPlanner({ subscription }) {
                 onClick={() => selectBowl(bowl)}
                 className="flex items-center justify-between rounded-xl border border-sage bg-white px-3.5 py-2.5 text-left transition-all hover:border-emerald hover:bg-sage/10 active:scale-[0.98]"
               >
-                <p className="font-heading text-sm font-semibold text-forest">{bowl.name}</p>
+                <span className="flex items-center gap-1.5">
+                  <VegBadge isVeg={bowl.is_veg} size={12} />
+                  <p className="font-heading text-sm font-semibold text-forest">{bowl.name}</p>
+                </span>
                 <div className="text-right">
                   <p className="text-xs font-bold text-emerald">{parseFloat(bowl.protein_g).toFixed(0)}g</p>
                   <p className="text-[10px] text-text-muted">{bowl.calories} kcal</p>
