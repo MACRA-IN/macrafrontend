@@ -58,7 +58,7 @@ const businessSchema = {
         },
         "geoRadius": "3000"
       },
-      "sameAs": ["https://www.instagram.com/macra.in"]
+      "sameAs": ["https://www.instagram.com/trymacra"]
     },
     {
       "@type": "WebSite",

@@ -29,7 +29,9 @@ export default function Dashboard() {
     });
   };
 
-  useEffect(() => { loadSubscription(); }, []);
+  useEffect(() => {
+    loadSubscription();
+  }, []);
 
   const showFeedback = (msg) => {
     setFeedback(msg);
@@ -37,7 +39,9 @@ export default function Dashboard() {
   };
 
   const handleRenewed = () => {
-    showFeedback("Subscription renewed! Your deliveries continue without interruption.");
+    showFeedback(
+      "Subscription renewed! Your deliveries continue without interruption.",
+    );
     loadSubscription();
   };
 
@@ -69,19 +73,24 @@ export default function Dashboard() {
   }
 
   return (
-    <div style={{ background: "linear-gradient(180deg, #F2FAF5 0%, #FFFFFF 60%)" }}>
+    <div
+      style={{ background: "linear-gradient(180deg, #F2FAF5 0%, #FFFFFF 60%)" }}
+    >
       {DASHBOARD_SEO}
       <Header />
 
       <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6 sm:py-8">
-
         {/* Greeting */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="font-heading text-2xl font-bold text-forest sm:text-3xl">
-              {user?.name ? `Hey, ${user.name.split(" ")[0]} 👋` : "Your dashboard"}
+              {user?.name
+                ? `Hey, ${user.name.split(" ")[0]} 👋`
+                : "Your dashboard"}
             </h1>
-            <p className="mt-0.5 text-sm text-text-muted">Here's your week with Macra.</p>
+            <p className="mt-0.5 text-sm text-text-muted">
+              Here's your week with Macra.
+            </p>
           </div>
           <button
             onClick={() => navigate("/menu")}
@@ -96,17 +105,26 @@ export default function Dashboard() {
           <SubscriptionCard
             subscription={subscription}
             feedback={feedback}
-            onPauseHint={() => showFeedback("👇 Use Pause / Resume on a meal row below.")}
+            onPauseHint={() =>
+              showFeedback("👇 Use Pause / Resume on a meal row below.")
+            }
             onRenewed={handleRenewed}
           />
         </div>
 
         {/* Meal section */}
-        <div className="mt-5 rounded-3xl border border-sage bg-white p-5 sm:p-6" style={{ boxShadow: "0 2px 20px rgba(15,43,29,0.06)" }}>
-          {Array.isArray(subscription.slots) && subscription.slots.length > 0 ? (
+        <div
+          className="mt-5 rounded-3xl border border-sage bg-white p-5 sm:p-6"
+          style={{ boxShadow: "0 2px 20px rgba(15,43,29,0.06)" }}
+        >
+          {Array.isArray(subscription.slots) &&
+          subscription.slots.length > 0 ? (
             <DeliveredSlots subscription={subscription} />
           ) : (
-            <MealPlanner subscription={subscription} />
+            <MealPlanner
+              subscription={subscription}
+              onSaved={loadSubscription}
+            />
           )}
         </div>
 
@@ -119,7 +137,6 @@ export default function Dashboard() {
             <LogOut size={14} /> Log out
           </button>
         </div>
-
       </div>
 
       <Footer />

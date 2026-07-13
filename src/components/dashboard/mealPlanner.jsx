@@ -6,17 +6,17 @@ import VegBadge from "../common/VegBadge";
 
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-export default function MealPlanner({ subscription }) {
-  const [bowls, setBowls]       = useState([]);
-  const [slots, setSlots]       = useState([]);
+export default function MealPlanner({ subscription, onSaved }) {
+  const [bowls, setBowls] = useState([]);
+  const [slots, setSlots] = useState([]);
   const [pickerFor, setPickerFor] = useState(null);
-  const [saving, setSaving]     = useState(false);
-  const [saved, setSaved]       = useState(false);
-  const [error, setError]       = useState(null);
-  const [loading, setLoading]   = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const deliverySlot  = subscription?.delivery_slot || [];
-  const slotColumns   = Array.isArray(deliverySlot)
+  const deliverySlot = subscription?.delivery_slot || [];
+  const slotColumns = Array.isArray(deliverySlot)
     ? deliverySlot.map((s) => Object.keys(s)[0])
     : ["lunch", "dinner"];
 
@@ -24,7 +24,10 @@ export default function MealPlanner({ subscription }) {
     const days = [];
     const current = new Date(subscription?.start_date);
     while (current.getDay() !== 0) {
-      days.push({ label: DAY_NAMES[current.getDay()], date: current.toISOString().split("T")[0] });
+      days.push({
+        label: DAY_NAMES[current.getDay()],
+        date: current.toISOString().split("T")[0],
+      });
       if (current.getDay() === 6) break;
       current.setDate(current.getDate() + 1);
     }
@@ -36,20 +39,38 @@ export default function MealPlanner({ subscription }) {
   useEffect(() => {
     getProducts().then((data) => {
       if (data) {
-        setBowls(data.filter((p) => p.category_id === subscription?.category_id && p.is_active));
+        setBowls(
+          data.filter(
+            (p) => p.category_id === subscription?.category_id && p.is_active,
+          ),
+        );
       }
       setLoading(false);
     });
   }, [subscription]);
 
-  const findSlot  = (date, slot) => slots.find((s) => s.delivery_date === date && s.slot === slot);
-  const removeSlot = (date, slot) => { setSlots(slots.filter((s) => !(s.delivery_date === date && s.slot === slot))); setSaved(false); };
+  const findSlot = (date, slot) =>
+    slots.find((s) => s.delivery_date === date && s.slot === slot);
+  const removeSlot = (date, slot) => {
+    setSlots(
+      slots.filter((s) => !(s.delivery_date === date && s.slot === slot)),
+    );
+    setSaved(false);
+  };
 
   const selectBowl = (bowl) => {
     if (!pickerFor) return;
     const { date, dayLabel, slot } = pickerFor;
-    const updated = slots.filter((s) => !(s.delivery_date === date && s.slot === slot));
-    updated.push({ delivery_date: date, day_label: dayLabel, slot, product_id: bowl.id, product_name: bowl.name });
+    const updated = slots.filter(
+      (s) => !(s.delivery_date === date && s.slot === slot),
+    );
+    updated.push({
+      delivery_date: date,
+      day_label: dayLabel,
+      slot,
+      product_id: bowl.id,
+      product_name: bowl.name,
+    });
     setSlots(updated);
     setPickerFor(null);
     setSaved(false);
@@ -59,10 +80,20 @@ export default function MealPlanner({ subscription }) {
     setSaving(true);
     setError(null);
     try {
-      await fillMealPlanner(slots.map((s) => ({ delivery_date: s.delivery_date, slot: s.slot, product_id: s.product_id })));
+      await fillMealPlanner(
+        slots.map((s) => ({
+          delivery_date: s.delivery_date,
+          slot: s.slot,
+          product_id: s.product_id,
+        })),
+      );
+
+      await onSaved?.(); // Refresh the subscription
       setSaved(true);
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to save. Please try again.");
+      setError(
+        err.response?.data?.message || "Failed to save. Please try again.",
+      );
     } finally {
       setSaving(false);
     }
@@ -83,34 +114,48 @@ export default function MealPlanner({ subscription }) {
   }
 
   const filledCount = slots.length;
-  const totalSlots  = deliveryDays.length * slotColumns.length;
+  const totalSlots = deliveryDays.length * slotColumns.length;
 
   return (
     <div>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-heading text-lg font-bold text-forest">Plan your meals</h2>
+          <h2 className="font-heading text-lg font-bold text-forest">
+            Plan your meals
+          </h2>
           <p className="mt-0.5 text-xs text-text-muted">
-            {slotColumns.map((c) => c.charAt(0).toUpperCase() + c.slice(1)).join(" + ")}
-            {" · "}{deliveryDays.length} day{deliveryDays.length !== 1 ? "s" : ""}
+            {slotColumns
+              .map((c) => c.charAt(0).toUpperCase() + c.slice(1))
+              .join(" + ")}
+            {" · "}
+            {deliveryDays.length} day{deliveryDays.length !== 1 ? "s" : ""}
           </p>
         </div>
         <div className="flex items-center gap-1.5">
           <div className="h-1.5 w-24 overflow-hidden rounded-full bg-sage/50">
             <div
               className="h-full rounded-full bg-emerald transition-all duration-500"
-              style={{ width: totalSlots > 0 ? `${(filledCount / totalSlots) * 100}%` : "0%" }}
+              style={{
+                width:
+                  totalSlots > 0
+                    ? `${(filledCount / totalSlots) * 100}%`
+                    : "0%",
+              }}
             />
           </div>
-          <span className="text-xs font-semibold text-text-muted">{filledCount}/{totalSlots}</span>
+          <span className="text-xs font-semibold text-text-muted">
+            {filledCount}/{totalSlots}
+          </span>
         </div>
       </div>
 
       {/* Column headers */}
       <div
         className="mt-4 grid gap-1.5"
-        style={{ gridTemplateColumns: `56px repeat(${slotColumns.length}, 1fr)` }}
+        style={{
+          gridTemplateColumns: `56px repeat(${slotColumns.length}, 1fr)`,
+        }}
       >
         <div />
         {slotColumns.map((col) => (
@@ -118,7 +163,9 @@ export default function MealPlanner({ subscription }) {
             <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted">
               {col.charAt(0).toUpperCase() + col.slice(1)}
             </p>
-            <p className="text-[10px] text-text-muted">{col === "lunch" ? "12–2 PM" : "6–8 PM"}</p>
+            <p className="text-[10px] text-text-muted">
+              {col === "lunch" ? "12–2 PM" : "6–8 PM"}
+            </p>
           </div>
         ))}
       </div>
@@ -129,18 +176,23 @@ export default function MealPlanner({ subscription }) {
           <div
             key={day.date}
             className="grid gap-1.5"
-            style={{ gridTemplateColumns: `56px repeat(${slotColumns.length}, 1fr)` }}
+            style={{
+              gridTemplateColumns: `56px repeat(${slotColumns.length}, 1fr)`,
+            }}
           >
             {/* Day label */}
             <div className="flex flex-col justify-center">
               <span className="text-sm font-bold text-forest">{day.label}</span>
-              <span className="text-[10px] text-text-muted">{day.date.slice(5).replace("-", "/")}</span>
+              <span className="text-[10px] text-text-muted">
+                {day.date.slice(5).replace("-", "/")}
+              </span>
             </div>
 
             {/* Slot cells */}
             {slotColumns.map((slot) => {
               const filled = findSlot(day.date, slot);
-              const isPickingThis = pickerFor?.date === day.date && pickerFor?.slot === slot;
+              const isPickingThis =
+                pickerFor?.date === day.date && pickerFor?.slot === slot;
 
               return (
                 <button
@@ -148,26 +200,42 @@ export default function MealPlanner({ subscription }) {
                   onClick={() =>
                     filled
                       ? removeSlot(day.date, slot)
-                      : setPickerFor(isPickingThis ? null : { date: day.date, dayLabel: day.label, slot })
+                      : setPickerFor(
+                          isPickingThis
+                            ? null
+                            : { date: day.date, dayLabel: day.label, slot },
+                        )
                   }
                   className={`min-h-12 rounded-xl border px-2 py-2 text-xs transition-all ${
                     filled
                       ? "border-emerald/40 bg-emerald/8 font-semibold text-forest"
                       : isPickingThis
-                      ? "border-emerald bg-sage/30 text-emerald"
-                      : "border-dashed border-sage text-text-muted hover:border-emerald/50 hover:bg-sage/10"
+                        ? "border-emerald bg-sage/30 text-emerald"
+                        : "border-dashed border-sage text-text-muted hover:border-emerald/50 hover:bg-sage/10"
                   }`}
                 >
                   {filled ? (
                     <div className="text-center leading-tight">
                       <div className="flex items-center justify-center gap-1">
-                        <VegBadge isVeg={bowls.find((b) => b.id === filled.product_id)?.is_veg} size={10} />
-                        <p className="text-xs font-semibold">{filled.product_name}</p>
+                        <VegBadge
+                          isVeg={
+                            bowls.find((b) => b.id === filled.product_id)
+                              ?.is_veg
+                          }
+                          size={10}
+                        />
+                        <p className="text-xs font-semibold">
+                          {filled.product_name}
+                        </p>
                       </div>
-                      <p className="mt-0.5 text-[10px] font-normal text-emerald-dark">✓ tap to clear</p>
+                      <p className="mt-0.5 text-[10px] font-normal text-emerald-dark">
+                        ✓ tap to clear
+                      </p>
                     </div>
                   ) : (
-                    <span className="block text-center text-base leading-none">+</span>
+                    <span className="block text-center text-base leading-none">
+                      +
+                    </span>
                   )}
                 </button>
               );
@@ -181,7 +249,8 @@ export default function MealPlanner({ subscription }) {
         <div className="mt-3 overflow-hidden rounded-2xl border border-emerald/30 bg-sage/10">
           <div className="flex items-center justify-between border-b border-sage px-4 py-2.5">
             <p className="font-heading text-sm font-semibold text-forest">
-              {pickerFor.dayLabel} · {pickerFor.slot === "lunch" ? "Lunch 12–2 PM" : "Dinner 6–8 PM"}
+              {pickerFor.dayLabel} ·{" "}
+              {pickerFor.slot === "lunch" ? "Lunch 12–2 PM" : "Dinner 6–8 PM"}
             </p>
             <button
               onClick={() => setPickerFor(null)}
@@ -199,11 +268,17 @@ export default function MealPlanner({ subscription }) {
               >
                 <span className="flex items-center gap-1.5">
                   <VegBadge isVeg={bowl.is_veg} size={12} />
-                  <p className="font-heading text-sm font-semibold text-forest">{bowl.name}</p>
+                  <p className="font-heading text-sm font-semibold text-forest">
+                    {bowl.name}
+                  </p>
                 </span>
                 <div className="text-right">
-                  <p className="text-xs font-bold text-emerald">{parseFloat(bowl.protein_g).toFixed(0)}g</p>
-                  <p className="text-[10px] text-text-muted">{bowl.calories} kcal</p>
+                  <p className="text-xs font-bold text-emerald">
+                    {parseFloat(bowl.protein_g).toFixed(0)}g
+                  </p>
+                  <p className="text-[10px] text-text-muted">
+                    {bowl.calories} kcal
+                  </p>
                 </div>
               </button>
             ))}
@@ -212,7 +287,9 @@ export default function MealPlanner({ subscription }) {
       )}
 
       {error && (
-        <p className="mt-3 rounded-xl bg-red-50 px-3.5 py-2.5 text-sm text-red-600">{error}</p>
+        <p className="mt-3 rounded-xl bg-red-50 px-3.5 py-2.5 text-sm text-red-600">
+          {error}
+        </p>
       )}
 
       <button
@@ -221,9 +298,14 @@ export default function MealPlanner({ subscription }) {
         className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-emerald py-3.5 font-heading text-sm font-semibold text-white transition-colors hover:bg-emerald-dark disabled:cursor-not-allowed disabled:opacity-40"
       >
         {saving ? (
-          <><span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" /> Saving…</>
+          <>
+            <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />{" "}
+            Saving…
+          </>
         ) : saved ? (
-          <><Check size={15} strokeWidth={3} /> Saved!</>
+          <>
+            <Check size={15} strokeWidth={3} /> Saved!
+          </>
         ) : (
           `Save meal plan · ${filledCount} bowl${filledCount !== 1 ? "s" : ""}`
         )}

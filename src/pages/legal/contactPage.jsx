@@ -144,12 +144,12 @@ export default function ContactPage() {
                   Instagram
                 </p>
                 <a
-                  href="https://instagram.com/macra.in"
+                  href="https://www.instagram.com/trymacra"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-0.5 block text-sm font-semibold text-forest hover:text-emerald"
                 >
-                  @macra.in
+                  @trymacra
                 </a>
               </div>
             </div>

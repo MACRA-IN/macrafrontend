@@ -85,7 +85,7 @@ export default function Footer() {
               <li><a href="/contact" className="transition-colors hover:text-white">Contact Us</a></li>
               <li>
                 <a
-                  href="https://instagram.com/macra.in"
+                  href="https://www.instagram.com/trymacra"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="transition-colors hover:text-white"
