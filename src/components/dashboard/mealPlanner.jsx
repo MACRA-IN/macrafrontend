@@ -114,8 +114,7 @@ export default function MealPlanner({ subscription, onSaved }) {
   }
 
   const filledCount = slots.length;
-  const totalSlots = deliveryDays.length * slotColumns.length;
-
+  const totalSlots = subscription.remaining_delivery_days * slotColumns.length;
   return (
     <div>
       {/* Header */}
@@ -129,7 +128,8 @@ export default function MealPlanner({ subscription, onSaved }) {
               .map((c) => c.charAt(0).toUpperCase() + c.slice(1))
               .join(" + ")}
             {" · "}
-            {deliveryDays.length} day{deliveryDays.length !== 1 ? "s" : ""}
+            {subscription.remaining_delivery_days} delivery day
+            {subscription.remaining_delivery_days !== 1 ? "s" : ""} left{" "}
           </p>
         </div>
         <div className="flex items-center gap-1.5">
@@ -171,77 +171,101 @@ export default function MealPlanner({ subscription, onSaved }) {
       </div>
 
       {/* Day rows */}
+      {/* Day rows */}
       <div className="mt-1.5 flex flex-col gap-1.5">
-        {deliveryDays.map((day) => (
-          <div
-            key={day.date}
-            className="grid gap-1.5"
-            style={{
-              gridTemplateColumns: `56px repeat(${slotColumns.length}, 1fr)`,
-            }}
-          >
-            {/* Day label */}
-            <div className="flex flex-col justify-center">
-              <span className="text-sm font-bold text-forest">{day.label}</span>
-              <span className="text-[10px] text-text-muted">
-                {day.date.slice(5).replace("-", "/")}
-              </span>
-            </div>
+        {deliveryDays.map((day, index) => {
+          const isDisabled = index >= subscription.remaining_delivery_days;
 
-            {/* Slot cells */}
-            {slotColumns.map((slot) => {
-              const filled = findSlot(day.date, slot);
-              const isPickingThis =
-                pickerFor?.date === day.date && pickerFor?.slot === slot;
+          return (
+            <div
+              key={day.date}
+              className="grid gap-1.5"
+              style={{
+                gridTemplateColumns: `56px repeat(${slotColumns.length}, 1fr)`,
+              }}
+            >
+              {/* Day label */}
+              <div className="flex flex-col justify-center">
+                <span className="text-sm font-bold text-forest">
+                  {day.label}
+                </span>
+                <span className="text-[10px] text-text-muted">
+                  {day.date.slice(5).replace("-", "/")}
+                </span>
+              </div>
 
-              return (
-                <button
-                  key={slot}
-                  onClick={() =>
-                    filled
-                      ? removeSlot(day.date, slot)
-                      : setPickerFor(
+              {/* Slot cells */}
+              {slotColumns.map((slot) => {
+                const filled = findSlot(day.date, slot);
+                const isPickingThis =
+                  pickerFor?.date === day.date && pickerFor?.slot === slot;
+
+                return (
+                  <button
+                    key={slot}
+                    disabled={isDisabled}
+                    onClick={() => {
+                      if (isDisabled) return;
+
+                      if (filled) {
+                        removeSlot(day.date, slot);
+                      } else {
+                        setPickerFor(
                           isPickingThis
                             ? null
-                            : { date: day.date, dayLabel: day.label, slot },
-                        )
-                  }
-                  className={`min-h-12 rounded-xl border px-2 py-2 text-xs transition-all ${
-                    filled
-                      ? "border-emerald/40 bg-emerald/8 font-semibold text-forest"
-                      : isPickingThis
-                        ? "border-emerald bg-sage/30 text-emerald"
-                        : "border-dashed border-sage text-text-muted hover:border-emerald/50 hover:bg-sage/10"
-                  }`}
-                >
-                  {filled ? (
-                    <div className="text-center leading-tight">
-                      <div className="flex items-center justify-center gap-1">
-                        <VegBadge
-                          isVeg={
-                            bowls.find((b) => b.id === filled.product_id)
-                              ?.is_veg
-                          }
-                          size={10}
-                        />
-                        <p className="text-xs font-semibold">
-                          {filled.product_name}
+                            : {
+                                date: day.date,
+                                dayLabel: day.label,
+                                slot,
+                              },
+                        );
+                      }
+                    }}
+                    className={`min-h-12 rounded-xl border px-2 py-2 text-xs transition-all ${
+                      isDisabled
+                        ? "cursor-not-allowed border-sage bg-gray-100 text-gray-400 opacity-60"
+                        : filled
+                          ? "border-emerald/40 bg-emerald/8 font-semibold text-forest"
+                          : isPickingThis
+                            ? "border-emerald bg-sage/30 text-emerald"
+                            : "border-dashed border-sage text-text-muted hover:border-emerald/50 hover:bg-sage/10"
+                    }`}
+                  >
+                    {filled ? (
+                      <div className="text-center leading-tight">
+                        <div className="flex items-center justify-center gap-1">
+                          <VegBadge
+                            isVeg={
+                              bowls.find((b) => b.id === filled.product_id)
+                                ?.is_veg
+                            }
+                            size={10}
+                          />
+                          <p className="text-xs font-semibold">
+                            {filled.product_name}
+                          </p>
+                        </div>
+
+                        <p className="mt-0.5 text-[10px] font-normal text-emerald-dark">
+                          ✓ tap to clear
                         </p>
                       </div>
-                      <p className="mt-0.5 text-[10px] font-normal text-emerald-dark">
-                        ✓ tap to clear
-                      </p>
-                    </div>
-                  ) : (
-                    <span className="block text-center text-base leading-none">
-                      +
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        ))}
+                    ) : isDisabled ? (
+                      <div className="text-center">
+                        <span className="text-lg">🔒</span>
+                        <p className="mt-0.5 text-[10px]">Not available</p>
+                      </div>
+                    ) : (
+                      <span className="block text-center text-base leading-none">
+                        +
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          );
+        })}
       </div>
 
       {/* Bowl picker */}
