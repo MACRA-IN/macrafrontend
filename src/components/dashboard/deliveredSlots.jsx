@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Check } from "lucide-react";
 import { pauseSubscription, resumeSubscription } from "../../services/subscriptionService";
 
-export default function DeliveredSlots({ subscription }) {
+export default function DeliveredSlots({ subscription, onSaved }) {
   const [slots, setSlots] = useState(subscription.slots);
   const [pausingDate, setPausingDate] = useState(null);
   const [error, setError] = useState(null);
@@ -28,8 +28,9 @@ export default function DeliveredSlots({ subscription }) {
     setPausingDate(date);
     setError(null);
     try {
-      await pauseSubscription(subscription.subscription_id, [date]);
-      setSlots(slots.map((s) => (s.delivery_date === date ? { ...s, status: "paused" } : s)));
+  await pauseSubscription(subscription.subscription_id, [date]);
+
+await onSaved?.();
     } catch (err) {
       setError(err.response?.data?.message || "Failed to pause this day.");
     } finally {
@@ -41,8 +42,8 @@ export default function DeliveredSlots({ subscription }) {
     setPausingDate(date);
     setError(null);
     try {
-      await resumeSubscription(subscription.subscription_id, [date]);
-      setSlots(slots.map((s) => (s.delivery_date === date ? { ...s, status: "pending" } : s)));
+    await resumeSubscription(subscription.subscription_id, [date]);
+    await onSaved?.();
     } catch (err) {
       setError(err.response?.data?.message || "Failed to resume this day.");
     } finally {

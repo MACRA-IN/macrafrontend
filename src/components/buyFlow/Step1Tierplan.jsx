@@ -15,8 +15,8 @@ const SLOT_OPTIONS = [
 
 const PLAN_DESC = {
   Trial: "4 days · up to 8 bowls. free delivery.",
-  Weekly: "7 days · up to 12 bowls. Pause up to 3 days.",
-  Monthly: "30 days · up to 50 bowls. Lowest price per bowl.",
+  Weekly: "6 days · up to 12 bowls. Pause up to 3 days.",
+  Monthly: "25 days · up to 50 bowls. Lowest price per bowl.",
 };
 
 const POPULAR_PLAN = "Monthly";
@@ -61,6 +61,7 @@ export default function Step1TierPlan({
   const { user } = useAuth();
   const [tiers, setTiers] = useState([]);
   const [plans, setPlans] = useState([]);
+  console.log("Step1TierPlan render",plan);
   const [pricing, setPricing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [checkingLocation, setCheckingLocation] = useState(true);
@@ -70,6 +71,7 @@ export default function Step1TierPlan({
   useEffect(() => {
     Promise.all([getCategories(), getProducts(), getPlans()]).then(
       ([categories, products, plansData]) => {
+        console.log("p",plansData)
         if (categories && products) {
           const result = categories
             .filter((c) => c.is_subscribable)

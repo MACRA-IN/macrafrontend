@@ -19,18 +19,27 @@ export default function Dashboard() {
   const { user, logoutUser } = useAuth();
   const [subscription, setSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [feedback, setFeedback] = useState(null);
 
-  const loadSubscription = () => {
-    setLoading(true);
-    getMySubscription().then((data) => {
+  const loadSubscription = async (showLoader = false) => {
+    if (showLoader) {
+      setLoading(true);
+    } else {
+      setRefreshing(true);
+    }
+
+    try {
+      const data = await getMySubscription();
       setSubscription(data);
+    } finally {
       setLoading(false);
-    });
+      setRefreshing(false);
+    }
   };
 
   useEffect(() => {
-    loadSubscription();
+    loadSubscription(true);
   }, []);
 
   const showFeedback = (msg) => {
@@ -119,7 +128,10 @@ export default function Dashboard() {
         >
           {Array.isArray(subscription.slots) &&
           subscription.slots.length > 0 ? (
-            <DeliveredSlots subscription={subscription} />
+            <DeliveredSlots
+              subscription={subscription}
+              onSaved={loadSubscription}
+            />
           ) : (
             <MealPlanner
               subscription={subscription}
@@ -138,6 +150,16 @@ export default function Dashboard() {
           </button>
         </div>
       </div>
+      {refreshing && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/40 backdrop-blur-sm">
+          <div className="rounded-2xl bg-white p-6 shadow-xl">
+            <div className="h-10 w-10 animate-spin rounded-full border-4 border-emerald border-t-transparent" />
+            <p className="mt-3 text-center text-sm font-medium text-forest">
+              Updating your meals...
+            </p>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>
