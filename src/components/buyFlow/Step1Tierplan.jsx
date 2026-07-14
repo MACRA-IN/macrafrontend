@@ -17,7 +17,7 @@ const PLAN_DESC = {
   Trial: "4 days · up to 8 bowls. free delivery.",
   Weekly: "6 days · up to 12 bowls. Pause up to 3 days.",
   Monthly: "25 days · up to 50 bowls. Lowest price per bowl.",
-};
+};3.
 
 const POPULAR_PLAN = "Monthly";
 
