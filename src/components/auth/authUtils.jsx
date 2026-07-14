@@ -19,7 +19,8 @@ export function validateRegister({ name, email, phone, password, confirmPassword
   else if (!/^[a-zA-Z\s]+$/.test(name))  e.name            = "Name can only contain letters";
   if (!email)                             e.email           = "Email is required";
   else if (!EMAIL_RE.test(email))         e.email           = "Enter a valid email address";
-  if (phone && !PHONE_RE.test(phone))     e.phone           = "Enter a valid 10-digit mobile number";
+  if (!phone)                              e.phone           = "Mobile number is required";
+  else if (!PHONE_RE.test(phone))          e.phone           = "Enter a valid 10-digit mobile number";
   if (!password)                          e.password        = "Password is required";
   else if (password.length < 8)          e.password        = "Minimum 8 characters required";
   else if (!/(?=.*[a-z])/.test(password)) e.password        = "Include at least one lowercase letter";
