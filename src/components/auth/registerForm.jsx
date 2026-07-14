@@ -59,7 +59,7 @@ export default function RegisterForm({ onSubmit, onGoogleLogin, onSwitch, loadin
             onChange={(e) => update("email", e.target.value)} onBlur={() => touch("email")} className={inputCls("email")} />
         </FieldWrapper>
 
-        <FieldWrapper label="Phone number (optional)" error={errors.phone} touched={touched.phone}>
+        <FieldWrapper label="Phone number (*)" error={errors.phone} touched={touched.phone}>
           <div className="flex overflow-hidden rounded-xl border border-sage focus-within:border-emerald focus-within:ring-2 focus-within:ring-emerald/10">
             <span className="flex items-center border-r border-sage bg-sage/30 px-3 text-sm font-medium text-text-muted">+91</span>
             <input type="tel" placeholder="9876543210" autoComplete="tel" maxLength={10}
