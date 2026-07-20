@@ -11,13 +11,16 @@ import DashboardEmptyState from "../../components/dashboard/dashboardEmptyState"
 import DashboardSkeleton from "../../components/dashboard/dashboardSkeleton";
 import { useAuth } from "../../context/authContext";
 import { getMySubscription } from "../../services/subscriptionService";
+import { getMyOrders } from "../../services/productService"; // or orderService if that's where you created it
 
 const DASHBOARD_SEO = <SEO title="My Dashboard | Macra" noIndex />;
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const { user, logoutUser } = useAuth();
+
   const [subscription, setSubscription] = useState(null);
+  const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [feedback, setFeedback] = useState(null);
@@ -30,8 +33,16 @@ export default function Dashboard() {
     }
 
     try {
-      const data = await getMySubscription();
-      setSubscription(data);
+      const [subscriptionData, ordersData] = await Promise.all([
+        getMySubscription(),
+        getMyOrders(),
+      ]);
+      console.log("Subscription:", subscriptionData);
+      console.log("Slots:", subscriptionData?.slots);
+      console.log("Orders:", ordersData);
+
+      setSubscription(subscriptionData);
+      setOrders(ordersData);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -101,6 +112,7 @@ export default function Dashboard() {
               Here's your week with Macra.
             </p>
           </div>
+
           <button
             onClick={() => navigate("/menu")}
             className="hidden items-center gap-1 rounded-full border border-sage px-4 py-2 text-sm font-medium text-forest transition-colors hover:bg-sage/30 sm:flex"
@@ -109,7 +121,7 @@ export default function Dashboard() {
           </button>
         </div>
 
-        {/* Subscription summary card */}
+        {/* Subscription */}
         <div className="mt-5">
           <SubscriptionCard
             subscription={subscription}
@@ -121,7 +133,7 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* Meal section */}
+        {/* Meals */}
         <div
           className="mt-5 rounded-3xl border border-sage bg-white p-5 sm:p-6"
           style={{ boxShadow: "0 2px 20px rgba(15,43,29,0.06)" }}
@@ -130,6 +142,7 @@ export default function Dashboard() {
           subscription.slots.length > 0 ? (
             <DeliveredSlots
               subscription={subscription}
+              orders={orders}
               onSaved={loadSubscription}
             />
           ) : (
@@ -140,7 +153,7 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* Mobile logout */}
+        {/* Logout */}
         <div className="mt-8 flex items-center justify-center border-t border-sage pt-5 md:hidden">
           <button
             onClick={handleLogout}
@@ -150,6 +163,7 @@ export default function Dashboard() {
           </button>
         </div>
       </div>
+
       {refreshing && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/40 backdrop-blur-sm">
           <div className="rounded-2xl bg-white p-6 shadow-xl">

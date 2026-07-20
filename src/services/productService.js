@@ -17,3 +17,8 @@ export const getCategories = async () => {
     console.error("Error fetching categories:", error);
   }
 };
+
+export const getMyOrders = async () => {
+  const { data } = await apiClient.get("/api/orders/my-orders");
+  return Array.isArray(data) ? data : (data.orders ?? data.results ?? []);
+};
