@@ -39,12 +39,12 @@ export default function PhoneModal({ onSubmit, onClose }) {
         </div>
 
         {/* Close button */}
-        <button
+        {/* <button
           onClick={onClose}
           className="absolute right-4 top-4 p-1.5 hover:bg-gray-100 rounded-full transition-colors z-10"
         >
           <X size={20} className="text-gray-400" />
-        </button>
+        </button> */}
 
         {/* Scrollable content */}
         <div className="overflow-y-auto flex-1 p-6 sm:p-8">
