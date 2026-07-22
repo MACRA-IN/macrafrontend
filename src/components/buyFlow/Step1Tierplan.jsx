@@ -1,11 +1,13 @@
-import { useEffect, useState } from "react";
-import { MapPin, MapPinOff, Loader2, RefreshCw } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { MapPin, MapPinOff, Loader2, RefreshCw, Search } from "lucide-react";
 import { getCategories } from "../../services/categoryService";
 import { getProducts } from "../../services/productService";
 import { getPlans, calculatePrice } from "../../services/subscriptionService";
 import { useAuth } from "../../context/authContext";
 import { checkDeliveryArea } from "../../services/locationService";
 import VegBadge from "../common/VegBadge";
+import { useJsApiLoader } from "@react-google-maps/api";
+import getMacOptions from "../../utils/macUtils";
 
 const SLOT_OPTIONS = [
   { id: "lunch", emoji: "☀️", label: "Lunch", desc: "12–2 PM", perDay: 1 },
@@ -59,6 +61,7 @@ export default function Step1TierPlan({
   onContinue,
 }) {
   const { user } = useAuth();
+  const { isLoaded: mapsLoaded } = useJsApiLoader({ googleMapsApiKey: getMacOptions().GOOGLE_MAPS_API_KEY });
   const [tiers, setTiers] = useState([]);
   const [plans, setPlans] = useState([]);
   console.log("Step1TierPlan render",plan);
@@ -67,6 +70,11 @@ export default function Step1TierPlan({
   const [checkingLocation, setCheckingLocation] = useState(true);
   const [locationError, setLocationError] = useState("");
   const [, setCustomerLocation] = useState(null);
+  const [manualQuery, setManualQuery] = useState("");
+  const [manualResults, setManualResults] = useState([]);
+  const [manualSearching, setManualSearching] = useState(false);
+  const [manualError, setManualError] = useState("");
+  const manualDebounce = useRef(null);
 
   useEffect(() => {
     Promise.all([getCategories(), getProducts(), getPlans()]).then(
@@ -189,11 +197,56 @@ export default function Step1TierPlan({
     );
   }
 
+  const handleManualSearch = (e) => {
+    const q = e.target.value;
+    setManualQuery(q);
+    setManualError("");
+    clearTimeout(manualDebounce.current);
+    if (!q.trim()) { setManualResults([]); return; }
+    if (!mapsLoaded || !window.google?.maps) return;
+    setManualSearching(true);
+    manualDebounce.current = setTimeout(() => {
+      new window.google.maps.Geocoder().geocode(
+        { address: q + ", Hyderabad" },
+        (results, status) => {
+          setManualSearching(false);
+          setManualResults(
+            status === "OK" ? results.slice(0, 4).map((r) => ({
+              label: r.formatted_address,
+              lat: r.geometry.location.lat(),
+              lng: r.geometry.location.lng(),
+            })) : []
+          );
+        }
+      );
+    }, 450);
+  };
+
+  const handleManualSelect = async (result) => {
+    setManualResults([]);
+    setManualQuery(result.label);
+    setManualSearching(true);
+    setManualError("");
+    try {
+      const res = await checkDeliveryArea(result.lat, result.lng);
+      if (!res.data.serviceable) {
+        setManualError("Sorry, we don't deliver to this area yet.");
+      } else {
+        setCustomerLocation({ latitude: result.lat, longitude: result.lng });
+        setLocationError("");
+      }
+    } catch {
+      setManualError("Unable to verify. Please try again.");
+    } finally {
+      setManualSearching(false);
+    }
+  };
+
   /* ── Location: error ── */
   if (locationError) {
-    const isPermission = locationError.includes("allow location");
+    const isPermission = locationError.includes("allow location") || locationError.includes("browser");
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center">
+      <div className="flex flex-col items-center py-10 text-center">
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-50">
           <MapPinOff size={26} className="text-red-400" />
         </div>
@@ -201,19 +254,48 @@ export default function Step1TierPlan({
           {isPermission ? "Location access needed" : "Not in your area yet"}
         </h3>
         <p className="mt-2 max-w-xs text-sm text-text-muted">{locationError}</p>
-        {!isPermission && (
-          <p className="mt-1 text-xs text-text-muted">
-            Macra delivers across select areas of Hyderabad. We're growing fast.
-          </p>
-        )}
-        {isPermission && (
-          <button
-            onClick={runLocationCheck}
-            className="mt-6 flex items-center gap-2 rounded-full border border-sage px-5 py-2.5 text-sm font-semibold text-forest transition-colors hover:bg-sage/30"
-          >
-            <RefreshCw size={14} /> Try again
-          </button>
-        )}
+
+        <div className="mt-6 w-full max-w-sm text-left">
+          <p className="mb-2 text-xs font-semibold text-forest">Search your area manually</p>
+          <div className="relative">
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+            <input
+              type="text"
+              value={manualQuery}
+              onChange={handleManualSearch}
+              placeholder="e.g. Gachibowli, Kondapur…"
+              className="w-full rounded-xl bg-sage/20 py-3 pl-9 pr-4 text-sm text-forest outline-none focus:ring-1 focus:ring-emerald"
+            />
+            {manualSearching && (
+              <Loader2 size={14} className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-emerald" />
+            )}
+          </div>
+
+          {manualResults.length > 0 && (
+            <div className="mt-1 rounded-xl border border-sage bg-white shadow-lg">
+              {manualResults.map((r, i) => (
+                <button
+                  key={i}
+                  onClick={() => handleManualSelect(r)}
+                  className="w-full border-b border-sage/30 px-4 py-3 text-left text-sm text-forest hover:bg-sage/20 last:border-b-0"
+                >
+                  {r.label}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {manualError && (
+            <p className="mt-2 rounded-xl bg-red-50 px-3 py-2 text-xs text-red-600">{manualError}</p>
+          )}
+        </div>
+
+        <button
+          onClick={runLocationCheck}
+          className="mt-5 flex items-center gap-2 rounded-full border border-sage px-5 py-2.5 text-sm font-semibold text-forest transition-colors hover:bg-sage/30"
+        >
+          <RefreshCw size={14} /> Try GPS again
+        </button>
       </div>
     );
   }
