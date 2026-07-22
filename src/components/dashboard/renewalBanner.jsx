@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { AlertTriangle, Clock } from "lucide-react";
+import { AlertTriangle, Timer } from "lucide-react";
 import RenewButton from "./renewButton";
 
 /* Surfaces the right renewal message for every lifecycle stage:
@@ -14,8 +14,9 @@ export default function RenewalBanner({ subscription, onRenewed }) {
   const todayStr = localDateStr(new Date());
   const tomorrowStr = localDateStr(new Date(Date.now() + 86400000));
 
-  const isExpired = subscription.end_date < todayStr;
-  const isExpiringTomorrow = !isExpired && subscription.end_date <= tomorrowStr;
+  const endStr = subscription.end_date?.slice(0, 10);
+  const isExpired = endStr < todayStr || subscription.status === "expired";
+  const isExpiringTomorrow = !isExpired && endStr <= tomorrowStr;
 
   if (!isExpired && !isExpiringTomorrow) return null;
 
@@ -23,7 +24,7 @@ export default function RenewalBanner({ subscription, onRenewed }) {
 
   const tone = isExpired
     ? { Icon: AlertTriangle, bg: "rgba(239,68,68,0.12)", border: "rgba(248,113,113,0.35)", text: "#FCA5A5" }
-    : { Icon: Clock, bg: "rgba(245,158,11,0.12)", border: "rgba(252,211,77,0.35)", text: "#FCD34D" };
+    : { Icon: Timer, bg: "rgba(245,158,11,0.12)", border: "rgba(252,211,77,0.35)", text: "#FCD34D" };
 
   const message = isTrial
     ? isExpired
@@ -41,7 +42,7 @@ export default function RenewalBanner({ subscription, onRenewed }) {
           {message}
         </p>
       </div>
-      <div className="mt-3">
+      <div className="mt-3 flex flex-col gap-2">
         {isTrial ? (
           <button
             onClick={() => navigate("/subscribe")}
@@ -50,11 +51,20 @@ export default function RenewalBanner({ subscription, onRenewed }) {
             Choose a plan →
           </button>
         ) : (
-          <RenewButton
-            planId={subscription.plan_id}
-            planLabel={subscription.plan_name}
-            onSuccess={onRenewed}
-          />
+          <>
+            <RenewButton
+              planId={subscription.plan_id}
+              planLabel={subscription.plan_name}
+              onSuccess={onRenewed}
+            />
+            <button
+              onClick={() => navigate("/subscribe")}
+              className="flex w-full items-center justify-center gap-1.5 rounded-full border py-3 font-heading text-sm font-semibold transition-all hover:brightness-110 active:scale-[0.98]"
+              style={{ borderColor: tone.border, color: tone.text }}
+            >
+              Change plan instead →
+            </button>
+          </>
         )}
       </div>
     </div>

@@ -263,7 +263,7 @@ export default function Step1TierPlan({
               type="text"
               value={manualQuery}
               onChange={handleManualSearch}
-              placeholder="e.g. Gachibowli, Kondapur…"
+              placeholder="e.g. Kphb"
               className="w-full rounded-xl bg-sage/20 py-3 pl-9 pr-4 text-sm text-forest outline-none focus:ring-1 focus:ring-emerald"
             />
             {manualSearching && (
