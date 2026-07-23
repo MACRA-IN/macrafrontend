@@ -64,8 +64,8 @@ export default function Step1TierPlan({
   const { isLoaded: mapsLoaded } = useJsApiLoader({ googleMapsApiKey: getMacOptions().GOOGLE_MAPS_API_KEY });
   const [tiers, setTiers] = useState([]);
   const [plans, setPlans] = useState([]);
-  console.log("Step1TierPlan render",plan);
   const [pricing, setPricing] = useState(null);
+
   const [loading, setLoading] = useState(true);
   const [checkingLocation, setCheckingLocation] = useState(true);
   const [locationError, setLocationError] = useState("");
@@ -499,7 +499,7 @@ export default function Step1TierPlan({
                     Delivery
                     {pricing.delivery_total > 0 && (
                       <span className="ml-1 text-[10px]">
-                        ({pricing.days} days × ₹{pricing.delivery_charge})
+                        ({pricing.days} days × {pricing.slots_per_day} slots × ₹{pricing.delivery_charge})
                       </span>
                     )}
                   </span>
