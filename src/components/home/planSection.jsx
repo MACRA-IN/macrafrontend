@@ -3,9 +3,36 @@ import { useNavigate } from "react-router-dom";
 import { getPublicPlans } from "../../services/subscriptionService";
 
 const PLAN_COPY = {
-  Trial: "Taste before committing. Up to 8 slots with a first-timer discount applied.",
-  Weekly: "Our most popular plan. Up to 12 slots and pause up to 3 days whenever life happens.",
-  Monthly: "Best value per bowl. Up to 50 slots and pause up to 12 days across the month.",
+  Trial: {
+    title: "Perfect to try Macra",
+    price: "₹596 – ₹1,992",
+   note: "Free delivery included",
+    points: [
+      "4 delivery days",
+      "4–8 meals",
+      "First-time discount included",
+    ],
+  },
+  Weekly: {
+    title: "Great for building a healthy habit",
+    price: "₹894 – ₹2,988",
+    note: "Excluding delivery",
+    points: [
+      "6 delivery days",
+      "6–12 meals",
+      "Pause up to 3 days",
+    ],
+  },
+  Monthly: {
+    title: "Best value for regular customers",
+    price: "₹3,725 – ₹12,450",
+    note: "Excluding delivery",
+    points: [
+      "25 delivery days",
+      "25–50 meals",
+      "Pause up to 12 days",
+    ],
+  },
 };
 
 const POPULAR_PLAN = "Monthly";
@@ -25,7 +52,6 @@ const PlansSection = () => {
   return (
     <section id="plans" className="bg-[#D4EDD9] py-8 sm:py-14 lg:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-
         <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-emerald-dark sm:text-sm">
           Plans
         </p>
@@ -60,9 +86,33 @@ const PlansSection = () => {
                     {plan.duration_days} days
                   </p>
 
-                  <p className="mt-3 flex-1 text-sm leading-relaxed text-text-muted">
-                    {PLAN_COPY[plan.name] ?? ""}
-                  </p>
+             <p className="mt-3 font-heading text-3xl font-bold text-forest">
+  {PLAN_COPY[plan.name]?.price}
+</p>
+<p className="mt-1 text-xs text-emerald font-medium">
+  {PLAN_COPY[plan.name]?.note}
+</p>
+
+
+              
+
+                  <div className="mt-4 flex-1">
+                    <p className="text-sm font-semibold text-forest">
+                      {PLAN_COPY[plan.name]?.title}
+                    </p>
+
+                    <ul className="mt-3 space-y-2">
+                      {PLAN_COPY[plan.name]?.points.map((point, index) => (
+                        <li
+                          key={index}
+                          className="flex items-center gap-2 text-sm text-text-muted"
+                        >
+                          <span className="text-emerald">✓</span>
+                          <span>{point}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
 
                   <button
                     onClick={() => navigate("/subscribe")}
@@ -81,12 +131,12 @@ const PlansSection = () => {
         )}
 
         <p className="mt-8 text-sm text-text-muted">
-          Price = slots × bowl price + delivery, minus any discount.
+          *Prices shown exclude delivery charges. Final price depends on the
+          bowl you choose and whether you select Lunch, Dinner, or Both.
         </p>
-
       </div>
     </section>
   );
-}
+};
 
 export default PlansSection;
