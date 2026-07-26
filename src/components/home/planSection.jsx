@@ -6,32 +6,20 @@ const PLAN_COPY = {
   Trial: {
     title: "Perfect to try Macra",
     price: "₹596 – ₹1,992",
-   note: "Free delivery included",
-    points: [
-      "4 delivery days",
-      "4–8 meals",
-      "First-time discount included",
-    ],
+    note: "Free delivery included",
+    points: ["4 delivery days", "4–8 meals", "First-time discount included"],
   },
   Weekly: {
     title: "Great for building a healthy habit",
     price: "₹894 – ₹2,988",
     note: "Excluding delivery",
-    points: [
-      "6 delivery days",
-      "6–12 meals",
-      "Pause up to 3 days",
-    ],
+    points: ["6 delivery days", "6–12 meals", "Pause up to 3 days"],
   },
   Monthly: {
     title: "Best value for regular customers",
     price: "₹3,725 – ₹12,450",
     note: "Excluding delivery",
-    points: [
-      "25 delivery days",
-      "25–50 meals",
-      "Pause up to 12 days",
-    ],
+    points: ["25 delivery days", "25–50 meals", "Pause up to 12 days"],
   },
 };
 
@@ -86,15 +74,12 @@ const PlansSection = () => {
                     {plan.duration_days} days
                   </p>
 
-             <p className="mt-3 font-heading text-3xl font-bold text-forest">
-  {PLAN_COPY[plan.name]?.price}
-</p>
-<p className="mt-1 text-xs text-emerald font-medium">
-  {PLAN_COPY[plan.name]?.note}
-</p>
-
-
-              
+                  <p className="mt-3 font-heading text-3xl font-bold text-forest">
+                    {PLAN_COPY[plan.name]?.price}
+                  </p>
+                  <p className="mt-1 text-xs text-emerald font-medium">
+                    {PLAN_COPY[plan.name]?.note}
+                  </p>
 
                   <div className="mt-4 flex-1">
                     <p className="text-sm font-semibold text-forest">
