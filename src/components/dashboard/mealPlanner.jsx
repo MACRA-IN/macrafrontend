@@ -107,6 +107,16 @@ export default function MealPlanner({ subscription, onSaved }) {
 
   return (
     <>
+      {/* Unsaved notice */}
+      {!saved && (
+        <div className="mb-4 flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5">
+          <span className="text-sm">⚠️</span>
+          <p className="text-xs font-medium text-amber-700 sm:text-sm">
+            Not saved yet — review your meals and tap <span className="font-bold">Save Meal Plan</span> below.
+          </p>
+        </div>
+      )}
+
       {/* Header */}
       <div className="mb-4 flex items-center justify-between">
         <div>
@@ -154,6 +164,11 @@ export default function MealPlanner({ subscription, onSaved }) {
 
       {/* Sticky save */}
       <div className="sticky bottom-0 -mx-5 mt-5 border-t border-sage bg-white/95 px-5 py-3 backdrop-blur-sm sm:-mx-6 sm:px-6">
+        {!saved && (
+          <p className="mb-5 text-center text-[11px] font-semibold text-amber-600 sm:text-xs">
+            👇 Tap below to save your meal plan
+          </p>
+        )}
         <button
           onClick={handleSave}
           disabled={saving || saved}
