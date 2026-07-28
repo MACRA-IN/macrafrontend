@@ -1,339 +1,182 @@
-import { useEffect, useState } from "react";
-import { Check, X } from "lucide-react";
-import { getProducts } from "../../services/productService";
-import { fillMealPlanner } from "../../services/subscriptionService";
+import { useState } from "react";
+import { Shuffle, Check, Loader2, Pencil } from "lucide-react";
 import VegBadge from "../common/VegBadge";
+import BowlPickerSheet from "./bowlPickerSheet";
+import { useMealPlan } from "./useMealPlan";
 
-const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const SLOT_EMOJI = { lunch: "☀️", dinner: "🌙" };
 
-export default function MealPlanner({ subscription, onSaved }) {
-  const [bowls, setBowls] = useState([]);
-  const [slots, setSlots] = useState([]);
-  const [pickerFor, setPickerFor] = useState(null);
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  const deliverySlot = subscription?.delivery_slot || [];
-  const slotColumns = Array.isArray(deliverySlot)
-    ? deliverySlot.map((s) => Object.keys(s)[0])
-    : ["lunch", "dinner"];
-
-  const buildDays = () => {
-    const days = [];
-    const current = new Date(subscription?.start_date);
-    while (current.getDay() !== 0) {
-      days.push({
-        label: DAY_NAMES[current.getDay()],
-        date: current.toISOString().split("T")[0],
-      });
-      if (current.getDay() === 6) break;
-      current.setDate(current.getDate() + 1);
-    }
-    return days;
-  };
-
-  const deliveryDays = subscription ? buildDays() : [];
-
-  useEffect(() => {
-    getProducts().then((data) => {
-      if (data) {
-        setBowls(
-          data.filter(
-            (p) => p.category_id === subscription?.category_id && p.is_active,
-          ),
-        );
-      }
-      setLoading(false);
-    });
-  }, [subscription]);
-
-  const findSlot = (date, slot) =>
-    slots.find((s) => s.delivery_date === date && s.slot === slot);
-  const removeSlot = (date, slot) => {
-    setSlots(
-      slots.filter((s) => !(s.delivery_date === date && s.slot === slot)),
-    );
-    setSaved(false);
-  };
-
-  const selectBowl = (bowl) => {
-    if (!pickerFor) return;
-    const { date, dayLabel, slot } = pickerFor;
-    const updated = slots.filter(
-      (s) => !(s.delivery_date === date && s.slot === slot),
-    );
-    updated.push({
-      delivery_date: date,
-      day_label: dayLabel,
-      slot,
-      product_id: bowl.id,
-      product_name: bowl.name,
-    });
-    setSlots(updated);
-    setPickerFor(null);
-    setSaved(false);
-  };
-
-  const handleSave = async () => {
-    setSaving(true);
-    setError(null);
-    try {
-      await fillMealPlanner(
-        slots.map((s) => ({
-          delivery_date: s.delivery_date,
-          slot: s.slot,
-          product_id: s.product_id,
-        })),
-      );
-
-      await onSaved?.(); // Refresh the subscription
-      setSaved(true);
-    } catch (err) {
-      setError(
-        err.response?.data?.message || "Failed to save. Please try again.",
-      );
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="flex flex-col gap-2.5">
-        <div className="h-6 w-36 animate-pulse rounded-lg bg-sage/60" />
-        <div className="h-3.5 w-48 animate-pulse rounded-lg bg-sage/40" />
-        <div className="mt-3 flex flex-col gap-1.5">
-          {[1, 2, 3, 4].map((n) => (
-            <div key={n} className="h-12 animate-pulse rounded-xl bg-sage/30" />
-          ))}
-        </div>
+function MealRow({ slot, onShuffle, onChange }) {
+  return (
+    <div className="flex items-center gap-2 rounded-xl border border-sage bg-white px-3 py-2.5 transition-colors hover:border-emerald/30 sm:px-4 sm:py-3">
+      <span className="text-sm sm:text-base">{SLOT_EMOJI[slot.slot] ?? "🍽️"}</span>
+      <VegBadge isVeg={slot.is_veg} size={11} />
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-xs font-semibold text-forest sm:text-sm">{slot.product_name}</p>
+        <p className="text-[10px] text-text-muted sm:text-xs">
+          {parseFloat(slot.protein_g ?? 0).toFixed(0)}g protein · {slot.calories} kcal
+        </p>
       </div>
-    );
-  }
+      <div className="flex shrink-0 items-center gap-1">
+        <button
+          onClick={() => onShuffle(slot.delivery_date, slot.slot)}
+          className="flex h-7 w-7 items-center justify-center rounded-lg border border-sage text-text-muted transition-colors hover:border-emerald/40 hover:bg-sage/20 hover:text-forest active:scale-95 sm:h-8 sm:w-8"
+          title="Shuffle"
+        >
+          <Shuffle size={11} className="sm:hidden" />
+          <Shuffle size={13} className="hidden sm:block" />
+        </button>
+        <button
+          onClick={() => onChange(slot)}
+          className="flex h-7 w-7 items-center justify-center rounded-lg border border-sage text-text-muted transition-colors hover:border-emerald/40 hover:bg-sage/20 hover:text-forest active:scale-95 sm:h-8 sm:w-8"
+          title="Change"
+        >
+          <Pencil size={11} className="sm:hidden" />
+          <Pencil size={13} className="hidden sm:block" />
+        </button>
+      </div>
+    </div>
+  );
+}
 
-  const filledCount = slots.length;
-  const totalSlots = subscription.remaining_delivery_days * slotColumns.length;
+function DaySection({ day, slots, onShuffle, onChange }) {
   return (
     <div>
+      <div className="mb-1.5 flex items-center gap-2">
+        <span className="text-xs font-bold text-forest sm:text-sm">
+          {day.label}
+        </span>
+        <span className="text-[10px] text-text-muted sm:text-xs">
+          {day.date.slice(5).replace("-", "/")}
+        </span>
+        <div className="h-px flex-1 bg-sage/40" />
+      </div>
+      <div className="flex flex-col gap-1.5">
+        {slots.map((slot) => (
+          <MealRow
+            key={`${slot.delivery_date}_${slot.slot}`}
+            slot={slot}
+            onShuffle={onShuffle}
+            onChange={onChange}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function LoadingSkeleton() {
+  return (
+    <div className="animate-pulse space-y-4">
+      <div className="h-4 w-32 rounded-full bg-sage/50" />
+      <div className="h-3 w-48 rounded-full bg-sage/30" />
+      {[1, 2, 3].map((n) => (
+        <div key={n} className="space-y-1.5">
+          <div className="h-3 w-16 rounded-full bg-sage/40" />
+          <div className="h-10 rounded-xl bg-sage/30" />
+          <div className="h-10 rounded-xl bg-sage/30" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default function MealPlanner({ subscription, onSaved }) {
+  const {
+    bowls, slots, days, totalSlots,
+    loading, saving, saved, error,
+    shuffleAll, shuffleOne, changeOne, handleSave,
+  } = useMealPlan(subscription, onSaved);
+
+  const [pickerTarget, setPickerTarget] = useState(null);
+
+  const openChange = (slot) =>
+    setPickerTarget({
+      delivery_date: slot.delivery_date,
+      slot: slot.slot,
+      day_label: slot.day_label,
+      currentId: slot.product_id,
+    });
+
+  const handleSelect = (bowl) => {
+    changeOne(pickerTarget.delivery_date, pickerTarget.slot, bowl);
+    setPickerTarget(null);
+  };
+
+  if (loading) return <LoadingSkeleton />;
+
+  return (
+    <>
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="mb-4 flex items-center justify-between">
         <div>
-          <h2 className="font-heading text-lg font-bold text-forest">
-            Plan your meals
-          </h2>
-          <p className="mt-0.5 text-xs text-text-muted">
-            {slotColumns
-              .map((c) => c.charAt(0).toUpperCase() + c.slice(1))
-              .join(" + ")}
-            {" · "}
-            {subscription.remaining_delivery_days} delivery day
-            {subscription.remaining_delivery_days !== 1 ? "s" : ""} left{" "}
+          <h2 className="font-heading text-base font-bold text-forest sm:text-lg">🍱 Plan your meals</h2>
+          <p className="mt-0.5 text-[11px] text-text-muted sm:text-xs">
+            Pre-filled · customize before saving
           </p>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="h-1.5 w-24 overflow-hidden rounded-full bg-sage/50">
-            <div
-              className="h-full rounded-full bg-emerald transition-all duration-500"
-              style={{
-                width:
-                  totalSlots > 0
-                    ? `${(filledCount / totalSlots) * 100}%`
-                    : "0%",
-              }}
-            />
+          <div className="h-1.5 w-16 overflow-hidden rounded-full bg-sage/40">
+            <div className="h-full w-full rounded-full bg-emerald" />
           </div>
-          <span className="text-xs font-semibold text-text-muted">
-            {filledCount}/{totalSlots}
-          </span>
+          <span className="text-[11px] font-bold text-emerald sm:text-xs">{totalSlots}/{totalSlots}</span>
         </div>
       </div>
 
-      {/* Column headers */}
-      <div
-        className="mt-4 grid gap-1.5"
-        style={{
-          gridTemplateColumns: `56px repeat(${slotColumns.length}, 1fr)`,
-        }}
+      {/* Shuffle all */}
+      <button
+        onClick={shuffleAll}
+        className="mb-4 flex w-full items-center justify-center gap-1.5 rounded-xl border border-sage bg-white py-2.5 text-xs font-semibold text-forest transition-all hover:border-emerald/40 hover:bg-sage/10 active:scale-[0.98] sm:text-sm"
       >
-        <div />
-        {slotColumns.map((col) => (
-          <div key={col} className="text-center">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted">
-              {col.charAt(0).toUpperCase() + col.slice(1)}
-            </p>
-            <p className="text-[10px] text-text-muted">
-              {col === "lunch" ? "12–2 PM" : "6–8 PM"}
-            </p>
-          </div>
-        ))}
-      </div>
+        <Shuffle size={12} className="text-emerald" /> Shuffle all meals
+      </button>
 
       {/* Day rows */}
-      {/* Day rows */}
-      <div className="mt-1.5 flex flex-col gap-1.5">
-        {deliveryDays.map((day, index) => {
-          const isDisabled = index >= subscription.remaining_delivery_days;
-
+      <div className="space-y-4">
+        {days.map((day) => {
+          const daySlots = slots.filter((s) => s.delivery_date === day.date);
+          if (!daySlots.length) return null;
           return (
-            <div
+            <DaySection
               key={day.date}
-              className="grid gap-1.5"
-              style={{
-                gridTemplateColumns: `56px repeat(${slotColumns.length}, 1fr)`,
-              }}
-            >
-              {/* Day label */}
-              <div className="flex flex-col justify-center">
-                <span className="text-sm font-bold text-forest">
-                  {day.label}
-                </span>
-                <span className="text-[10px] text-text-muted">
-                  {day.date.slice(5).replace("-", "/")}
-                </span>
-              </div>
-
-              {/* Slot cells */}
-              {slotColumns.map((slot) => {
-                const filled = findSlot(day.date, slot);
-                const isPickingThis =
-                  pickerFor?.date === day.date && pickerFor?.slot === slot;
-
-                return (
-                  <button
-                    key={slot}
-                    disabled={isDisabled}
-                    onClick={() => {
-                      if (isDisabled) return;
-
-                      if (filled) {
-                        removeSlot(day.date, slot);
-                      } else {
-                        setPickerFor(
-                          isPickingThis
-                            ? null
-                            : {
-                                date: day.date,
-                                dayLabel: day.label,
-                                slot,
-                              },
-                        );
-                      }
-                    }}
-                    className={`min-h-12 rounded-xl border px-2 py-2 text-xs transition-all ${
-                      isDisabled
-                        ? "cursor-not-allowed border-sage bg-gray-100 text-gray-400 opacity-60"
-                        : filled
-                          ? "border-emerald/40 bg-emerald/8 font-semibold text-forest"
-                          : isPickingThis
-                            ? "border-emerald bg-sage/30 text-emerald"
-                            : "border-dashed border-sage text-text-muted hover:border-emerald/50 hover:bg-sage/10"
-                    }`}
-                  >
-                    {filled ? (
-                      <div className="text-center leading-tight">
-                        <div className="flex items-center justify-center gap-1">
-                          <VegBadge
-                            isVeg={
-                              bowls.find((b) => b.id === filled.product_id)
-                                ?.is_veg
-                            }
-                            size={10}
-                          />
-                          <p className="text-xs font-semibold">
-                            {filled.product_name}
-                          </p>
-                        </div>
-
-                        <p className="mt-0.5 text-[10px] font-normal text-emerald-dark">
-                          ✓ tap to clear
-                        </p>
-                      </div>
-                    ) : isDisabled ? (
-                      <div className="text-center">
-                        <span className="text-lg">🔒</span>
-                        <p className="mt-0.5 text-[10px]">Not available</p>
-                      </div>
-                    ) : (
-                      <span className="block text-center text-base leading-none">
-                        +
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
+              day={day}
+              slots={daySlots}
+              onShuffle={shuffleOne}
+              onChange={openChange}
+            />
           );
         })}
       </div>
 
-      {/* Bowl picker */}
-      {pickerFor && (
-        <div className="mt-3 overflow-hidden rounded-2xl border border-emerald/30 bg-sage/10">
-          <div className="flex items-center justify-between border-b border-sage px-4 py-2.5">
-            <p className="font-heading text-sm font-semibold text-forest">
-              {pickerFor.dayLabel} ·{" "}
-              {pickerFor.slot === "lunch" ? "Lunch 12–2 PM" : "Dinner 6–8 PM"}
-            </p>
-            <button
-              onClick={() => setPickerFor(null)}
-              className="rounded-full p-1 text-text-muted transition-colors hover:bg-sage hover:text-forest"
-            >
-              <X size={13} />
-            </button>
-          </div>
-          <div className="grid gap-1.5 p-3 sm:grid-cols-2">
-            {bowls.map((bowl) => (
-              <button
-                key={bowl.id}
-                onClick={() => selectBowl(bowl)}
-                className="flex items-center justify-between rounded-xl border border-sage bg-white px-3.5 py-2.5 text-left transition-all hover:border-emerald hover:bg-sage/10 active:scale-[0.98]"
-              >
-                <span className="flex items-center gap-1.5">
-                  <VegBadge isVeg={bowl.is_veg} size={12} />
-                  <p className="font-heading text-sm font-semibold text-forest">
-                    {bowl.name}
-                  </p>
-                </span>
-                <div className="text-right">
-                  <p className="text-xs font-bold text-emerald">
-                    {parseFloat(bowl.protein_g).toFixed(0)}g
-                  </p>
-                  <p className="text-[10px] text-text-muted">
-                    {bowl.calories} kcal
-                  </p>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
       {error && (
-        <p className="mt-3 rounded-xl bg-red-50 px-3.5 py-2.5 text-sm text-red-600">
-          {error}
-        </p>
+        <p className="mt-4 rounded-xl bg-red-50 px-3 py-2 text-xs text-red-600">{error}</p>
       )}
 
-      <button
-        onClick={handleSave}
-        disabled={filledCount === 0 || saving || saved}
-        className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-emerald py-3.5 font-heading text-sm font-semibold text-white transition-colors hover:bg-emerald-dark disabled:cursor-not-allowed disabled:opacity-40"
-      >
-        {saving ? (
-          <>
-            <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />{" "}
-            Saving…
-          </>
-        ) : saved ? (
-          <>
-            <Check size={15} strokeWidth={3} /> Saved!
-          </>
-        ) : (
-          `Save meal plan · ${filledCount} bowl${filledCount !== 1 ? "s" : ""}`
-        )}
-      </button>
-    </div>
+      {/* Sticky save */}
+      <div className="sticky bottom-0 -mx-5 mt-5 border-t border-sage bg-white/95 px-5 py-3 backdrop-blur-sm sm:-mx-6 sm:px-6">
+        <button
+          onClick={handleSave}
+          disabled={saving || saved}
+          className="flex w-full items-center justify-center gap-2 rounded-full py-3 text-xs font-bold text-white shadow-md transition-all hover:scale-[1.01] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:py-3.5 sm:text-sm"
+          style={{ background: saved ? "#16A85E" : "linear-gradient(135deg,#2CD377 0%,#16A85E 100%)" }}
+        >
+          {saving ? (
+            <><Loader2 size={13} className="animate-spin" /> Saving…</>
+          ) : saved ? (
+            <><Check size={13} strokeWidth={3} /> Meal plan saved!</>
+          ) : (
+            <>Save meal plan · {totalSlots} bowls</>
+          )}
+        </button>
+      </div>
+
+      <BowlPickerSheet
+        open={!!pickerTarget}
+        target={pickerTarget}
+        bowls={bowls}
+        onSelect={handleSelect}
+        onClose={() => setPickerTarget(null)}
+      />
+    </>
   );
 }
