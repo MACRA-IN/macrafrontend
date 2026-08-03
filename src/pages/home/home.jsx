@@ -4,7 +4,6 @@ import Header from "../../components/home/header";
 import Hero from "../../components/home/hero";
 import HowItWorks from "../../components/home/howItWorks";
 import FounderStory from "../../components/home/founderStory";
-import CustomerFavorites from "../../components/home/customerFavorites";
 import TiersPreview from "../../components/home/tiersPreview";
 import PlansSection from "../../components/home/planSection";
 import ScienceCTA from "../../components/home/scienceCTA";
