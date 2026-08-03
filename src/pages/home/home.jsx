@@ -102,7 +102,7 @@ const Home = () => (
     <FounderStory />
 
     {/* bg-bg — no divider, same bg */}
-    <CustomerFavorites />
+    {/* <CustomerFavorites /> */}
     <SectionDivider from={BG}     to={SAGE2}  />
 
     {/* bg-sage (#D4EDD9 = SAGE2) */}
