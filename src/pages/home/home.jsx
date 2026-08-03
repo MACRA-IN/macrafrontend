@@ -90,38 +90,27 @@ const Home = () => (
     />
     <Header />
 
-    {/* bg-bg */}
     <Hero />
     <SectionDivider from={BG}     to={SAGE}   />
 
-    {/* bg-sage */}
     <HowItWorks />
     <SectionDivider from={SAGE}   to={BG}     />
 
-    {/* bg-bg */}
-    <FounderStory />
-
-    {/* bg-bg — no divider, same bg */}
-    {/* <CustomerFavorites /> */}
+    <TiersPreview />
     <SectionDivider from={BG}     to={SAGE2}  />
 
-    {/* bg-sage (#D4EDD9 = SAGE2) */}
     <PlansSection />
     <SectionDivider from={SAGE2}  to={BG}     />
 
-    {/* bg-bg */}
-    <TiersPreview />
+    <FounderStory />
     <SectionDivider from={BG}     to={FOREST} />
 
-    {/* bg-forest */}
     <ScienceCTA />
     <SectionDivider from={FOREST} to={BG}     />
 
-    {/* bg-bg */}
     <FinalCTA />
     <SectionDivider from={BG}     to={FOREST} />
 
-    {/* bg-forest */}
     <Footer />
   </div>
 );
