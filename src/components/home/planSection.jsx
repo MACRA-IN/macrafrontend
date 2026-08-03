@@ -38,12 +38,12 @@ const PlansSection = () => {
   }, []);
 
   return (
-    <section id="plans" className="bg-[#D4EDD9] py-8 sm:py-14 lg:py-20">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-emerald-dark sm:text-sm">
+    <section id="plans" className="bg-[#D4EDD9] py-12 sm:py-16 lg:py-20">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-emerald sm:text-xs">
           Plans
         </p>
-        <h2 className="mb-8 font-heading text-2xl font-bold text-forest sm:text-3xl sm:mb-10 lg:text-4xl">
+        <h2 className="mb-8 font-heading text-2xl font-bold text-forest sm:mb-10 sm:text-3xl lg:text-[34px] lg:leading-[42px]">
           Start small. Stay longer.
         </h2>
 

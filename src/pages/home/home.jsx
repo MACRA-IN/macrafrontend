@@ -3,6 +3,8 @@ import SEO from "../../components/common/SEO";
 import Header from "../../components/home/header";
 import Hero from "../../components/home/hero";
 import HowItWorks from "../../components/home/howItWorks";
+import FounderStory from "../../components/home/founderStory";
+import CustomerFavorites from "../../components/home/customerFavorites";
 import TiersPreview from "../../components/home/tiersPreview";
 import PlansSection from "../../components/home/planSection";
 import ScienceCTA from "../../components/home/scienceCTA";
@@ -10,9 +12,9 @@ import FinalCTA from "../../components/home/finalCTA";
 import Footer from "../../components/home/footer";
 import SectionDivider from "../../components/home/sectionDivider";
 
-const BG     = "#FAFAF7";
-const SAGE   = "#E3F2E8";
-const SAGE2  = "#D4EDD9";
+const BG = "#FAFAF7";
+const SAGE = "#E3F2E8";
+const SAGE2 = "#D4EDD9";
 const FOREST = "#0F2B1D";
 
 const businessSchema = {
@@ -21,53 +23,61 @@ const businessSchema = {
     {
       "@type": ["LocalBusiness", "FoodEstablishment"],
       "@id": "https://macra.in/#business",
-      "name": "Macra",
-      "description": "Subscription-based high-protein meal bowl delivery service in Hyderabad",
-      "url": "https://macra.in",
-      "telephone": "+918309180145",
-      "email": "support@macra.in",
-      "address": {
+      name: "Macra",
+      description:
+        "Subscription-based high-protein meal bowl delivery service in Hyderabad",
+      url: "https://macra.in",
+      telephone: "+918309180145",
+      email: "support@macra.in",
+      address: {
         "@type": "PostalAddress",
-        "streetAddress": "KPHB Colony",
-        "addressLocality": "Hyderabad",
-        "addressRegion": "Telangana",
-        "postalCode": "500085",
-        "addressCountry": "IN"
+        streetAddress: "KPHB Colony",
+        addressLocality: "Hyderabad",
+        addressRegion: "Telangana",
+        postalCode: "500085",
+        addressCountry: "IN",
       },
-      "geo": {
+      geo: {
         "@type": "GeoCoordinates",
-        "latitude": 17.4875,
-        "longitude": 78.3953
+        latitude: 17.4875,
+        longitude: 78.3953,
       },
-      "priceRange": "₹149-₹249",
-      "servesCuisine": ["Healthy", "High Protein", "Indian"],
-      "openingHoursSpecification": [
+      priceRange: "₹149-₹249",
+      servesCuisine: ["Healthy", "High Protein", "Indian"],
+      openingHoursSpecification: [
         {
           "@type": "OpeningHoursSpecification",
-          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-          "opens": "09:00",
-          "closes": "21:00"
-        }
-      ],
-      "areaServed": {
-        "@type": "GeoCircle",
-        "geoMidpoint": {
-          "@type": "GeoCoordinates",
-          "latitude": 17.4875,
-          "longitude": 78.3953
+          dayOfWeek: [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+          ],
+          opens: "09:00",
+          closes: "21:00",
         },
-        "geoRadius": "3000"
+      ],
+      areaServed: {
+        "@type": "GeoCircle",
+        geoMidpoint: {
+          "@type": "GeoCoordinates",
+          latitude: 17.4875,
+          longitude: 78.3953,
+        },
+        geoRadius: "3000",
       },
-      "sameAs": ["https://www.instagram.com/trymacra"]
+      sameAs: ["https://www.instagram.com/trymacra"],
     },
     {
       "@type": "WebSite",
       "@id": "https://macra.in/#website",
-      "url": "https://macra.in",
-      "name": "Macra",
-      "description": "Macro-tracked protein bowls delivered daily in Hyderabad"
-    }
-  ]
+      url: "https://macra.in",
+      name: "Macra",
+      description: "Macro-tracked protein bowls delivered daily in Hyderabad",
+    },
+  ],
 };
 
 const Home = () => (
@@ -81,24 +91,38 @@ const Home = () => (
     />
     <Header />
 
+    {/* bg-bg */}
     <Hero />
     <SectionDivider from={BG}     to={SAGE}   />
 
+    {/* bg-sage */}
     <HowItWorks />
     <SectionDivider from={SAGE}   to={BG}     />
 
-    <TiersPreview />
+    {/* bg-bg */}
+    <FounderStory />
+
+    {/* bg-bg — no divider, same bg */}
+    <CustomerFavorites />
     <SectionDivider from={BG}     to={SAGE2}  />
 
+    {/* bg-sage (#D4EDD9 = SAGE2) */}
     <PlansSection />
-    <SectionDivider from={SAGE2}  to={FOREST} />
+    <SectionDivider from={SAGE2}  to={BG}     />
 
+    {/* bg-bg */}
+    <TiersPreview />
+    <SectionDivider from={BG}     to={FOREST} />
+
+    {/* bg-forest */}
     <ScienceCTA />
     <SectionDivider from={FOREST} to={BG}     />
 
+    {/* bg-bg */}
     <FinalCTA />
     <SectionDivider from={BG}     to={FOREST} />
 
+    {/* bg-forest */}
     <Footer />
   </div>
 );
