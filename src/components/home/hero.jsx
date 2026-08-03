@@ -56,7 +56,7 @@ const Hero = () => {
           <div className="relative">
             <div className="overflow-hidden rounded-3xl border border-sage">
               <img
-                src="/banners/proteinbowl.avif"
+                src="/banners/bowl2.avif"
                 alt="Protein bowl"
                 className="h-72 w-full object-cover sm:h-96 lg:h-96"
               />
