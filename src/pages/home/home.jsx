@@ -3,6 +3,7 @@ import SEO from "../../components/common/SEO";
 import Header from "../../components/home/header";
 import Hero from "../../components/home/hero";
 import HowItWorks from "../../components/home/howItWorks";
+import KitchenSection from "../../components/home/kitchenSection";
 import FounderStory from "../../components/home/founderStory";
 import TiersPreview from "../../components/home/tiersPreview";
 import PlansSection from "../../components/home/planSection";
@@ -96,6 +97,7 @@ const Home = () => (
     <HowItWorks />
     <SectionDivider from={SAGE}   to={BG}     />
 
+    <KitchenSection />
     <TiersPreview />
     <SectionDivider from={BG}     to={SAGE2}  />
 
