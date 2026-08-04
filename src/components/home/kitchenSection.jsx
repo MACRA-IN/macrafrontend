@@ -90,10 +90,17 @@ function KitchenVideo() {
         </button>
       )}
 
-      {/* Live badge */}
-      <div className="absolute left-4 top-4 flex items-center gap-1.5 rounded-full bg-forest/70 px-3 py-1.5 backdrop-blur-sm">
-        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald" />
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-white/90">Live kitchen</span>
+      {/* Our Kitchen label — top of video */}
+      <div className="absolute left-4 top-4 flex flex-col gap-2">
+        <div className="flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1.5 shadow-sm backdrop-blur-sm">
+          <div className="h-px w-4 bg-emerald" />
+          <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-emerald">Our Kitchen</span>
+        </div>
+        {/* Live badge below */}
+        <div className="flex items-center gap-1.5 rounded-full bg-forest/70 px-3 py-1.5 backdrop-blur-sm">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald" />
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-white/90">Live kitchen</span>
+        </div>
       </div>
     </div>
   );
@@ -106,6 +113,12 @@ export default function KitchenSection() {
   return (
     <section ref={sectionRef} className="bg-bg py-14 sm:py-20 lg:py-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+
+        {/* Section label */}
+        <div className={`mb-6 flex items-center gap-2 transition-all duration-500 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+          <div className="h-px w-6 bg-emerald" />
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-emerald sm:text-xs">Our Kitchen</p>
+        </div>
 
         {/* Two-column: video left, text right */}
         <div className="grid gap-8 lg:grid-cols-2 lg:items-center lg:gap-12">
@@ -121,11 +134,7 @@ export default function KitchenSection() {
 
           {/* Right — text */}
           <div className={`transition-all duration-500 ease-out delay-150 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-            <div className="flex items-center gap-2.5">
-              <div className="h-px w-7 bg-emerald" />
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-emerald">Our Kitchen</p>
-            </div>
-            <h2 className="mt-3 font-heading text-2xl font-bold leading-tight text-forest sm:text-3xl lg:text-[34px] lg:leading-[1.22]">
+            <h2 className="font-heading text-2xl font-bold leading-tight text-forest sm:text-3xl lg:text-[34px] lg:leading-[1.22]">
               See Where Your<br /> Food Is Made.
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-text-muted sm:text-[15px]">
