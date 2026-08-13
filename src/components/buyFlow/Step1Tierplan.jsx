@@ -41,6 +41,51 @@ function RadioDot({ selected }) {
   );
 }
 
+/* Shared manual-address search input + results dropdown, used both inline (permission-denied
+   screen) and in the standalone search sub-view (reached from the waitlist screen). */
+function ManualSearchFields({ query, onChange, searching, results, onSelect, error }) {
+  return (
+    <div className="relative">
+      <Search
+        size={15}
+        className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted"
+      />
+      <input
+        type="text"
+        value={query}
+        onChange={onChange}
+        placeholder="e.g. Kphb"
+        autoFocus
+        className="w-full rounded-xl border border-sage bg-white py-3 pl-10 pr-4 text-sm text-forest outline-none transition-colors focus:border-emerald focus:ring-2 focus:ring-emerald/20"
+      />
+      {searching && (
+        <Loader2
+          size={14}
+          className="absolute right-3.5 top-1/2 -translate-y-1/2 animate-spin text-emerald"
+        />
+      )}
+
+      {results.length > 0 && (
+        <div className="absolute z-10 mt-1.5 w-full overflow-hidden rounded-xl border border-sage bg-white shadow-lg">
+          {results.map((r, i) => (
+            <button
+              key={i}
+              onClick={() => onSelect(r)}
+              className="w-full border-b border-sage/50 px-4 py-3 text-left text-sm text-forest transition-colors last:border-b-0 hover:bg-sage/20"
+            >
+              {r.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {error && (
+        <p className="mt-2 rounded-xl bg-red-50 px-3 py-2 text-xs text-red-600">{error}</p>
+      )}
+    </div>
+  );
+}
+
 function StepBadge({ n, done, active }) {
   return (
     <div
@@ -289,7 +334,9 @@ export default function Step1TierPlan({
       locationError.includes("allow location") ||
       locationError.includes("browser");
 
-    // Permission-denied / unsupported-browser case — unrelated to the waitlist flow.
+    // Permission-denied / unsupported-browser case — search expands inline in this same
+    // card instead of navigating to a different screen; still lands on the waitlist
+    // screen below if the picked address turns out to be outside the delivery zone.
     if (isPermission) {
       return (
         <div className="flex flex-col items-center py-10 text-center">
@@ -306,11 +353,32 @@ export default function Step1TierPlan({
           >
             <RefreshCw size={14} /> Try again
           </button>
+
+          {!showManualSearch ? (
+            <button
+              onClick={() => setShowManualSearch(true)}
+              className="mt-3 flex items-center gap-1.5 text-sm font-semibold text-emerald-dark transition-colors hover:text-emerald"
+            >
+              <Search size={14} /> Enter your address manually
+            </button>
+          ) : (
+            <div className="mt-5 w-full max-w-sm text-left">
+              <ManualSearchFields
+                query={manualQuery}
+                onChange={handleManualSearch}
+                searching={manualSearching}
+                results={manualResults}
+                onSelect={handleManualSelect}
+                error={manualError}
+              />
+            </div>
+          )}
         </div>
       );
     }
 
-    // Manual-search sub-view, reached via "Search another area" on the waitlist screen.
+    // Manual-search sub-view — reached via "Search another area" on the waitlist screen
+    // (i.e. after a non-permission "not serviceable" result), not the permission case above.
     if (showManualSearch) {
       return (
         <div className="mx-auto w-full max-w-120">
@@ -325,46 +393,14 @@ export default function Step1TierPlan({
             <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-forest">
               Search your area manually
             </p>
-            <div className="relative">
-              <Search
-                size={15}
-                className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted"
-              />
-              <input
-                type="text"
-                value={manualQuery}
-                onChange={handleManualSearch}
-                placeholder="e.g. Kphb"
-                autoFocus
-                className="w-full rounded-xl border border-sage bg-white py-3 pl-10 pr-4 text-sm text-forest outline-none transition-colors focus:border-emerald focus:ring-2 focus:ring-emerald/20"
-              />
-              {manualSearching && (
-                <Loader2
-                  size={14}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 animate-spin text-emerald"
-                />
-              )}
-            </div>
-
-            {manualResults.length > 0 && (
-              <div className="mt-1.5 overflow-hidden rounded-xl border border-sage bg-white shadow-lg">
-                {manualResults.map((r, i) => (
-                  <button
-                    key={i}
-                    onClick={() => handleManualSelect(r)}
-                    className="w-full border-b border-sage/50 px-4 py-3 text-left text-sm text-forest transition-colors last:border-b-0 hover:bg-sage/20"
-                  >
-                    {r.label}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {manualError && (
-              <p className="mt-2 rounded-xl bg-red-50 px-3 py-2 text-xs text-red-600">
-                {manualError}
-              </p>
-            )}
+            <ManualSearchFields
+              query={manualQuery}
+              onChange={handleManualSearch}
+              searching={manualSearching}
+              results={manualResults}
+              onSelect={handleManualSelect}
+              error={manualError}
+            />
 
             <button
               onClick={runLocationCheck}
