@@ -1,11 +1,16 @@
 import { useEffect, useState, useRef } from "react";
-import { MapPin, MapPinOff, Loader2, RefreshCw, Search } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { MapPin, MapPinOff, Loader2, RefreshCw, Search, ArrowLeft } from "lucide-react";
 import { getCategories } from "../../services/categoryService";
 import { getProducts } from "../../services/productService";
 import { getPlans, calculatePrice } from "../../services/subscriptionService";
 import { useAuth } from "../../context/authContext";
-import { checkDeliveryArea } from "../../services/locationService";
+import {
+  checkDeliveryArea,
+  joinWaitlist,
+} from "../../services/locationService";
 import VegBadge from "../common/VegBadge";
+import WaitlistScreen from "./WaitlistScreen";
 import { useJsApiLoader } from "@react-google-maps/api";
 import getMacOptions from "../../utils/macUtils";
 
@@ -19,7 +24,8 @@ const PLAN_DESC = {
   Trial: "4 days · up to 8 bowls. free delivery.",
   Weekly: "6 days · up to 12 bowls. Pause up to 3 days.",
   Monthly: "25 days · up to 50 bowls. Lowest price per bowl.",
-};3.
+};
+3;
 
 const POPULAR_PLAN = "Monthly";
 
@@ -61,7 +67,10 @@ export default function Step1TierPlan({
   onContinue,
 }) {
   const { user } = useAuth();
-  const { isLoaded: mapsLoaded } = useJsApiLoader({ googleMapsApiKey: getMacOptions().GOOGLE_MAPS_API_KEY });
+  const navigate = useNavigate();
+  const { isLoaded: mapsLoaded } = useJsApiLoader({
+    googleMapsApiKey: getMacOptions().GOOGLE_MAPS_API_KEY,
+  });
   const [tiers, setTiers] = useState([]);
   const [plans, setPlans] = useState([]);
   const [pricing, setPricing] = useState(null);
@@ -70,16 +79,36 @@ export default function Step1TierPlan({
   const [checkingLocation, setCheckingLocation] = useState(true);
   const [locationError, setLocationError] = useState("");
   const [, setCustomerLocation] = useState(null);
+  const [areaName, setAreaName] = useState("");
   const [manualQuery, setManualQuery] = useState("");
   const [manualResults, setManualResults] = useState([]);
   const [manualSearching, setManualSearching] = useState(false);
   const [manualError, setManualError] = useState("");
+  const [locationCheckId, setLocationCheckId] = useState(null);
+  const [showManualSearch, setShowManualSearch] = useState(false);
   const manualDebounce = useRef(null);
+
+  /* Best-effort reverse geocode so the waitlist screen can show a friendly area name
+     instead of raw coordinates when the match came from GPS rather than manual search. */
+  const reverseGeocode = (lat, lng) =>
+    new Promise((resolve) => {
+      if (!window.google?.maps) return resolve(null);
+      new window.google.maps.Geocoder().geocode(
+        { location: { lat, lng } },
+        (results, status) => {
+          if (status !== "OK" || !results?.[0]) return resolve(null);
+          const component = results[0].address_components.find(
+            (c) => c.types.includes("sublocality") || c.types.includes("locality"),
+          );
+          resolve(component?.long_name || results[0].formatted_address);
+        },
+      );
+    });
 
   useEffect(() => {
     Promise.all([getCategories(), getProducts(), getPlans()]).then(
       ([categories, products, plansData]) => {
-        console.log("p",plansData)
+        console.log("p", plansData);
         if (categories && products) {
           const result = categories
             .filter((c) => c.is_subscribable)
@@ -144,10 +173,14 @@ export default function Step1TierPlan({
           const { latitude, longitude } = position.coords;
           const result = await checkDeliveryArea(latitude, longitude);
           if (!result.data.serviceable) {
+            setLocationCheckId(result.data.location_check_id);
             setLocationError(
               "Sorry, Macra is currently unavailable in your area.",
             );
             setCheckingLocation(false);
+            reverseGeocode(latitude, longitude).then((label) =>
+              setAreaName(label || "your area"),
+            );
             return;
           }
           setCustomerLocation({ latitude, longitude });
@@ -202,7 +235,10 @@ export default function Step1TierPlan({
     setManualQuery(q);
     setManualError("");
     clearTimeout(manualDebounce.current);
-    if (!q.trim()) { setManualResults([]); return; }
+    if (!q.trim()) {
+      setManualResults([]);
+      return;
+    }
     if (!mapsLoaded || !window.google?.maps) return;
     setManualSearching(true);
     manualDebounce.current = setTimeout(() => {
@@ -211,13 +247,15 @@ export default function Step1TierPlan({
         (results, status) => {
           setManualSearching(false);
           setManualResults(
-            status === "OK" ? results.slice(0, 4).map((r) => ({
-              label: r.formatted_address,
-              lat: r.geometry.location.lat(),
-              lng: r.geometry.location.lng(),
-            })) : []
+            status === "OK"
+              ? results.slice(0, 4).map((r) => ({
+                  label: r.formatted_address,
+                  lat: r.geometry.location.lat(),
+                  lng: r.geometry.location.lng(),
+                }))
+              : [],
           );
-        }
+        },
       );
     }, 450);
   };
@@ -230,7 +268,10 @@ export default function Step1TierPlan({
     try {
       const res = await checkDeliveryArea(result.lat, result.lng);
       if (!res.data.serviceable) {
-        setManualError("Sorry, we don't deliver to this area yet.");
+        setLocationCheckId(res.data.location_check_id);
+        setAreaName(result.label);
+        setLocationError("Sorry, Macra is currently unavailable in your area.");
+        setShowManualSearch(false);
       } else {
         setCustomerLocation({ latitude: result.lat, longitude: result.lng });
         setLocationError("");
@@ -244,59 +285,109 @@ export default function Step1TierPlan({
 
   /* ── Location: error ── */
   if (locationError) {
-    const isPermission = locationError.includes("allow location") || locationError.includes("browser");
-    return (
-      <div className="flex flex-col items-center py-10 text-center">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-50">
-          <MapPinOff size={26} className="text-red-400" />
-        </div>
-        <h3 className="mt-5 font-heading text-xl font-bold text-forest">
-          {isPermission ? "Location access needed" : "Not in your area yet"}
-        </h3>
-        <p className="mt-2 max-w-xs text-sm text-text-muted">{locationError}</p>
+    const isPermission =
+      locationError.includes("allow location") ||
+      locationError.includes("browser");
 
-        <div className="mt-6 w-full max-w-sm text-left">
-          <p className="mb-2 text-xs font-semibold text-forest">Search your area manually</p>
-          <div className="relative">
-            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
-            <input
-              type="text"
-              value={manualQuery}
-              onChange={handleManualSearch}
-              placeholder="e.g. Kphb"
-              className="w-full rounded-xl bg-sage/20 py-3 pl-9 pr-4 text-sm text-forest outline-none focus:ring-1 focus:ring-emerald"
-            />
-            {manualSearching && (
-              <Loader2 size={14} className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-emerald" />
-            )}
+    // Permission-denied / unsupported-browser case — unrelated to the waitlist flow.
+    if (isPermission) {
+      return (
+        <div className="flex flex-col items-center py-10 text-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-50">
+            <MapPinOff size={26} className="text-red-400" />
           </div>
-
-          {manualResults.length > 0 && (
-            <div className="mt-1 rounded-xl border border-sage bg-white shadow-lg">
-              {manualResults.map((r, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleManualSelect(r)}
-                  className="w-full border-b border-sage/30 px-4 py-3 text-left text-sm text-forest hover:bg-sage/20 last:border-b-0"
-                >
-                  {r.label}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {manualError && (
-            <p className="mt-2 rounded-xl bg-red-50 px-3 py-2 text-xs text-red-600">{manualError}</p>
-          )}
+          <h3 className="mt-5 font-heading text-xl font-bold text-forest">
+            Location access needed
+          </h3>
+          <p className="mt-2 max-w-xs text-sm text-text-muted">{locationError}</p>
+          <button
+            onClick={runLocationCheck}
+            className="mt-5 flex items-center gap-2 rounded-full border border-sage bg-white px-5 py-2.5 text-sm font-semibold text-forest transition-colors hover:bg-sage/30"
+          >
+            <RefreshCw size={14} /> Try again
+          </button>
         </div>
+      );
+    }
 
-        <button
-          onClick={runLocationCheck}
-          className="mt-5 flex items-center gap-2 rounded-full border border-sage px-5 py-2.5 text-sm font-semibold text-forest transition-colors hover:bg-sage/30"
-        >
-          <RefreshCw size={14} /> Try GPS again
-        </button>
-      </div>
+    // Manual-search sub-view, reached via "Search another area" on the waitlist screen.
+    if (showManualSearch) {
+      return (
+        <div className="mx-auto w-full max-w-120">
+          <button
+            onClick={() => setShowManualSearch(false)}
+            className="flex items-center gap-1.5 text-sm font-semibold text-text-muted transition-colors hover:text-forest"
+          >
+            <ArrowLeft size={15} /> Back
+          </button>
+
+          <div className="mt-4 rounded-xl border border-sage bg-white p-6 shadow-card sm:p-8">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-forest">
+              Search your area manually
+            </p>
+            <div className="relative">
+              <Search
+                size={15}
+                className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted"
+              />
+              <input
+                type="text"
+                value={manualQuery}
+                onChange={handleManualSearch}
+                placeholder="e.g. Kphb"
+                autoFocus
+                className="w-full rounded-xl border border-sage bg-white py-3 pl-10 pr-4 text-sm text-forest outline-none transition-colors focus:border-emerald focus:ring-2 focus:ring-emerald/20"
+              />
+              {manualSearching && (
+                <Loader2
+                  size={14}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 animate-spin text-emerald"
+                />
+              )}
+            </div>
+
+            {manualResults.length > 0 && (
+              <div className="mt-1.5 overflow-hidden rounded-xl border border-sage bg-white shadow-lg">
+                {manualResults.map((r, i) => (
+                  <button
+                    key={i}
+                    onClick={() => handleManualSelect(r)}
+                    className="w-full border-b border-sage/50 px-4 py-3 text-left text-sm text-forest transition-colors last:border-b-0 hover:bg-sage/20"
+                  >
+                    {r.label}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {manualError && (
+              <p className="mt-2 rounded-xl bg-red-50 px-3 py-2 text-xs text-red-600">
+                {manualError}
+              </p>
+            )}
+
+            <button
+              onClick={runLocationCheck}
+              className="mt-5 flex w-full items-center justify-center gap-2 rounded-full border border-sage bg-white px-5 py-2.5 text-sm font-semibold text-forest transition-colors hover:bg-sage/30"
+            >
+              <RefreshCw size={14} /> Try GPS again
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // Outside the delivery zone — the full waitlist experience.
+    return (
+      <WaitlistScreen
+        areaName={areaName || "your area"}
+        onJoinWaitlist={async () => {
+          const res = await joinWaitlist(locationCheckId);
+          if (!res?.success) throw new Error(res?.message || "Failed to join waitlist");
+        }}
+        onSearchArea={() => setShowManualSearch(true)}
+        onBackHome={() => navigate("/")}
+      />
     );
   }
 
@@ -328,20 +419,30 @@ export default function Step1TierPlan({
   /* ── Main form ── */
   return (
     <div className="space-y-7">
-
       {/* Delivery confirmed badge */}
       <div
         className="flex items-center gap-2.5 rounded-2xl border px-4 py-3"
-        style={{ background: "rgba(44,211,119,0.08)", borderColor: "rgba(44,211,119,0.30)" }}
+        style={{
+          background: "rgba(44,211,119,0.08)",
+          borderColor: "rgba(44,211,119,0.30)",
+        }}
       >
         <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald">
           <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-            <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+            <path
+              d="M1 4L3.5 6.5L9 1"
+              stroke="white"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         </div>
         <p className="text-xs font-semibold text-emerald">
           We deliver to your area{" "}
-          <span className="font-normal text-text-muted">· pick your setup below</span>
+          <span className="font-normal text-text-muted">
+            · pick your setup below
+          </span>
         </p>
       </div>
 
@@ -373,17 +474,25 @@ export default function Step1TierPlan({
                   <span className="flex items-center gap-1 rounded-full border border-sage bg-white px-1.5 py-0.5 text-[9px] font-semibold text-text-muted">
                     {t.hasVeg && <VegBadge isVeg size={10} />}
                     {t.hasNonVeg && <VegBadge isVeg={false} size={10} />}
-                    {t.hasVeg && t.hasNonVeg ? "Veg & Non-veg" : t.hasVeg ? "Veg only" : "Non-veg only"}
+                    {t.hasVeg && t.hasNonVeg
+                      ? "Veg & Non-veg"
+                      : t.hasVeg
+                        ? "Veg only"
+                        : "Non-veg only"}
                   </span>
                 </div>
                 <div className="mt-1 flex items-center gap-2">
                   <div className="h-1 w-16 overflow-hidden rounded-full bg-sage">
                     <div
                       className="h-1 rounded-full bg-emerald"
-                      style={{ width: `${Math.min((t.avgProtein / 50) * 100, 100)}%` }}
+                      style={{
+                        width: `${Math.min((t.avgProtein / 50) * 100, 100)}%`,
+                      }}
                     />
                   </div>
-                  <p className="text-[11px] text-text-muted">~{t.avgProtein}g protein</p>
+                  <p className="text-[11px] text-text-muted">
+                    ~{t.avgProtein}g protein
+                  </p>
                 </div>
               </div>
               <div className="text-right">
@@ -468,7 +577,9 @@ export default function Step1TierPlan({
               <p className="mt-2 font-heading text-xs font-bold text-forest">
                 {s.label}
               </p>
-              <p className="mt-0.5 text-[10px] leading-tight text-text-muted">{s.desc}</p>
+              <p className="mt-0.5 text-[10px] leading-tight text-text-muted">
+                {s.desc}
+              </p>
             </button>
           ))}
         </div>
@@ -499,7 +610,8 @@ export default function Step1TierPlan({
                     Delivery
                     {pricing.delivery_total > 0 && (
                       <span className="ml-1 text-[10px]">
-                        ({pricing.days} days × {pricing.slots_per_day} slots × ₹{pricing.delivery_charge})
+                        ({pricing.days} days × {pricing.slots_per_day} slots × ₹
+                        {pricing.delivery_charge})
                       </span>
                     )}
                   </span>
@@ -539,7 +651,9 @@ export default function Step1TierPlan({
         onClick={onContinue}
         disabled={!tier || !plan || !slotChoice || !pricing}
         className="w-full rounded-full py-4 font-heading text-sm font-semibold text-white shadow-md transition-all duration-200 hover:scale-[1.01] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
-        style={{ background: "linear-gradient(135deg, #2CD377 0%, #16A85E 100%)" }}
+        style={{
+          background: "linear-gradient(135deg, #2CD377 0%, #16A85E 100%)",
+        }}
       >
         Continue to Delivery →
       </button>

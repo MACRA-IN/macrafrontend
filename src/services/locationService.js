@@ -13,3 +13,16 @@ export const checkDeliveryArea = async (latitude, longitude) => {
     throw error;
   }
 };
+
+export const joinWaitlist = async (location_check_id) => {
+  try {
+    const response = await apiClient.post("api/location/join", {
+      location_check_id,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error joining waitlist:", error);
+    throw error;
+  }
+};
