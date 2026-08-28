@@ -9,19 +9,18 @@ const Hero = () => {
         <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-14">
           {/* Left: pitch */}
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-sage bg-white px-4 py-1.5">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald" />
-              <span className="text-xs font-medium text-forest">
-                Founding batch · ships{" "}
-                <span className="font-semibold text-emerald">August 2026</span>
-              </span>
-            </div>
+            <p className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.2em] text-text-muted sm:text-xs">
+              <span className="h-px w-6 bg-forest/30" />
+              High-protein bowls · Hyderabad
+            </p>
 
             <h1
-              className="mt-4 font-heading font-bold leading-tight text-forest"
-              style={{ fontSize: "clamp(1.75rem, 4vw, 3rem)" }}
+              className="mt-4 font-heading font-bold leading-[0.95] tracking-tight text-forest"
+              style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)" }}
             >
-              Eat clean. Track nothing. We do it for you.
+              Hit your protein.
+              <br />
+              <span className="text-emerald">Skip the cooking.</span>
             </h1>
 
             <p className="mt-3 max-w-lg text-sm leading-relaxed text-text-muted sm:text-base">
@@ -63,22 +62,34 @@ const Hero = () => {
             </div>
 
             <div className="absolute left-5 top-5 rounded-2xl bg-white px-4 py-2 shadow-md">
-              <span className="font-heading text-lg font-bold text-emerald">38g</span>
-              <span className="ml-1 text-[10px] font-semibold uppercase tracking-wide text-text-muted">protein</span>
+              <span className="font-heading text-lg font-bold text-emerald">
+                38g
+              </span>
+              <span className="ml-1 text-[10px] font-semibold uppercase tracking-wide text-text-muted">
+                protein
+              </span>
             </div>
             <div className="absolute bottom-5 right-5 rounded-2xl bg-white px-4 py-2 shadow-md">
-              <span className="font-heading text-lg font-bold text-forest">520</span>
-              <span className="ml-1 text-[10px] font-semibold uppercase tracking-wide text-text-muted">kcal</span>
+              <span className="font-heading text-lg font-bold text-forest">
+                520
+              </span>
+              <span className="ml-1 text-[10px] font-semibold uppercase tracking-wide text-text-muted">
+                kcal
+              </span>
             </div>
             <div className="absolute bottom-5 left-5 rounded-2xl bg-forest px-4 py-2 shadow-md">
-              <span className="font-heading text-lg font-bold text-emerald">12g</span>
-              <span className="ml-1 text-[10px] font-semibold uppercase tracking-wide text-white/60">fiber</span>
+              <span className="font-heading text-lg font-bold text-emerald">
+                12g
+              </span>
+              <span className="ml-1 text-[10px] font-semibold uppercase tracking-wide text-white/60">
+                fiber
+              </span>
             </div>
           </div>
         </div>
       </div>
     </section>
   );
-}
+};
 
 export default Hero;
