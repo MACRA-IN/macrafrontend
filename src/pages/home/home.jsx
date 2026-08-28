@@ -98,8 +98,10 @@ const Home = () => (
     <SectionDivider from={SAGE}   to={BG}     />
 
     <KitchenSection />
+    <SectionDivider from={BG}     to={FOREST} />
+
     <TiersPreview />
-    <SectionDivider from={BG}     to={SAGE2}  />
+    <SectionDivider from={FOREST} to={SAGE2}  />
 
     <PlansSection />
     <SectionDivider from={SAGE2}  to={BG}     />
