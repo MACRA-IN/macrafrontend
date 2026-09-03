@@ -11,6 +11,7 @@ import ScienceCTA from "../../components/home/scienceCTA";
 import FinalCTA from "../../components/home/finalCTA";
 import Footer from "../../components/home/footer";
 import SectionDivider from "../../components/home/sectionDivider";
+import AnnouncementBanner from "../../components/common/announcementBanner";
 
 const BG = "#FAFAF7";
 const SAGE = "#E3F2E8";
@@ -89,6 +90,7 @@ const Home = () => (
       canonicalPath="/"
       structuredData={businessSchema}
     />
+    <AnnouncementBanner />
     <Header />
 
     <Hero />

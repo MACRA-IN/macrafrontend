@@ -7,6 +7,7 @@ module.exports = {
     extend: {
       colors: {
         emerald: "#2CD377",
+        punch: "#FFD84D",
         "emerald-dark": "#16A85E",
         forest: "#0F2B1D",
         bg: "#FAFAF7",
