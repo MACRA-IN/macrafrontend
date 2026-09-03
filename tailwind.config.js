@@ -1,8 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    "./src/**/*.{js,jsx,ts,tsx}",
-  ],
+  content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
       colors: {
@@ -10,12 +8,15 @@ module.exports = {
         punch: "#FFD84D",
         "emerald-dark": "#16A85E",
         forest: "#0F2B1D",
+         cream: "#FFFBF0",
+      punch: "#FFD84D",
         bg: "#FAFAF7",
         surface: "#FFFFFF",
         sage: "#E3F2E8",
         citrus: "#FF9F1C",
         text: "#16241C",
         "text-muted": "#5C6B62",
+       
       },
 
       spacing: {

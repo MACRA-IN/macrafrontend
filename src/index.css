@@ -3,15 +3,17 @@
 @import "tailwindcss";
 
 @theme {
-  --color-emerald: #2CD377;
-  --color-emerald-dark: #16A85E;
-  --color-forest: #0F2B1D;
-  --color-sage: #E3F2E8;
-  --color-surface: #FFFFFF;
-  --color-bg: #FAFAF7;
-  --color-text-muted: #5C6B62;
-  --color-citrus: #FF9F1C;
-  --color-crimson: #EF4444;
+  --color-emerald: #2cd377;
+  --color-emerald-dark: #16a85e;
+  --color-forest: #0f2b1d;
+  --color-sage: #e3f2e8;
+  --color-surface: #ffffff;
+  --color-bg: #fafaf7;
+  --color-text-muted: #5c6b62;
+  --color-citrus: #ff9f1c;
+  --color-crimson: #ef4444;
+  --color-punch: #ffd84d;
+  --color-cream: #FFFBF0;
   --color-punch: #FFD84D;
 
   --font-heading: "Poppins", sans-serif;
@@ -23,7 +25,7 @@
 @layer base {
   body {
     font-family: var(--font-body);
-    color: #16241C;
-    background-color: #FAFAF7;
+    color: #16241c;
+    background-color: #fafaf7;
   }
 }
