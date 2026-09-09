@@ -1,6 +1,6 @@
   import { useEffect, useState, useRef } from "react";
   import { useNavigate } from "react-router-dom";
-  import { MapPin, MapPinOff, Loader2, RefreshCw, Search, ArrowLeft } from "lucide-react";
+  import { MapPin, MapPinOff, Loader2, RefreshCw, Search, ArrowLeft, UtensilsCrossed } from "lucide-react";
   import { getCategories } from "../../services/categoryService";
   import { getProducts } from "../../services/productService";
   import { getPlans, calculatePrice } from "../../services/subscriptionService";
@@ -13,6 +13,12 @@
   import WaitlistScreen from "./WaitlistScreen";
   import { useJsApiLoader } from "@react-google-maps/api";
   import getMacOptions from "../../utils/macUtils";
+
+  const MEAL_TYPE_OPTIONS = [
+    { id: "salad", emoji: "🥗", label: "Salad", desc: "Light & fresh" },
+    { id: "rice", emoji: "🍚", label: "Rice", desc: "Hearty & filling" },
+    { id: "both", emoji: "🍱", label: "Both", desc: "Alternates daily" },
+  ];
 
   const SLOT_OPTIONS = [
     { id: "lunch", emoji: "☀️", label: "Lunch", desc: "12–2 PM", perDay: 1 },
@@ -106,9 +112,11 @@
     tier,
     plan,
     slotChoice,
+    mealType,
     onSelectTier,
     onSelectPlan,
     onSelectSlot,
+    onSelectMealType,
     onContinue,
   }) {
     const { user } = useAuth();
@@ -484,11 +492,21 @@
 
         {/* ── Section 1: Bowl tier ── */}
         <div>
-          <div className="mb-3 flex items-center gap-2.5">
-            <StepBadge n={1} done={!!tier} active={!tier} />
-            <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-forest">
-              Bowl tier
-            </h2>
+          <div className="mb-3 flex items-center justify-between gap-2.5">
+            <div className="flex items-center gap-2.5">
+              <StepBadge n={1} done={!!tier} active={!tier} />
+              <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-forest">
+                Bowl tier
+              </h2>
+            </div>
+            <button
+              type="button"
+              onClick={() => navigate("/menu")}
+              className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-sage bg-white px-3 py-1.5 text-[11px] font-semibold text-forest transition-colors hover:border-emerald/40 hover:bg-sage/20"
+            >
+              <UtensilsCrossed size={12} className="text-emerald-dark" />
+              See menu
+            </button>
           </div>
           <div className="flex flex-col gap-2">
             {tiers.map((t) => (
@@ -621,8 +639,41 @@
           </div>
         </div>
 
+        {/* ── Section 4: Meal type ── */}
+        <div
+          className={`transition-opacity duration-300 ${slotChoice ? "opacity-100" : "pointer-events-none opacity-35"}`}
+        >
+          <div className="mb-3 flex items-center gap-2.5">
+            <StepBadge n={4} done={!!mealType} active={!!slotChoice && !mealType} />
+            <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-forest">
+              Meal type
+            </h2>
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            {MEAL_TYPE_OPTIONS.map((m) => (
+              <button
+                key={m.id}
+                onClick={() => onSelectMealType(m.id)}
+                className={`flex flex-col items-center rounded-2xl py-4 px-2 text-center transition-all duration-200 ${
+                  mealType === m.id
+                    ? "border-2 border-emerald bg-sage/20 shadow-sm"
+                    : "border border-sage bg-white hover:border-emerald/40 hover:bg-sage/10"
+                }`}
+              >
+                <span className="text-2xl">{m.emoji}</span>
+                <p className="mt-2 font-heading text-xs font-bold text-forest">
+                  {m.label}
+                </p>
+                <p className="mt-0.5 text-[10px] leading-tight text-text-muted">
+                  {m.desc}
+                </p>
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* ── Price summary ── */}
-        {tier && plan && slotChoice && (
+        {tier && plan && slotChoice && mealType && (
           <div className="rounded-2xl border border-sage bg-white p-4 shadow-card">
             {pricing ? (
               <>
@@ -685,7 +736,7 @@
         {/* ── CTA ── */}
         <button
           onClick={onContinue}
-          disabled={!tier || !plan || !slotChoice || !pricing}
+          disabled={!tier || !plan || !slotChoice || !mealType || !pricing}
           className="w-full rounded-full py-4 font-heading text-sm font-semibold text-white shadow-md transition-all duration-200 hover:scale-[1.01] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
           style={{
             background: "linear-gradient(135deg, #2CD377 0%, #16A85E 100%)",

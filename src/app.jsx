@@ -6,6 +6,7 @@ import Home from './pages/home/home';
 import CartPage from './pages/cart/cart';
 import BuyFlow from './pages/buyFlow/buyFlow';
 import Dashboard from './pages/dashboard/dashboard';
+import PriceCalculator from './pages/calculator/priceCalculator';
 import MenuPage from './components/home/menuSection';
 import PrivacyPolicy from './pages/legal/privacyPolicy';
 import TermsAndConditions from './pages/legal/termsAndConditions';
@@ -44,6 +45,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/menu" element={<MenuPage />} />
+              <Route path="/calculator" element={<PriceCalculator />} />
               <Route path="/cart" element={<CartPage />} />
               <Route path="/subscribe" element={<ProtectedRoute><BuyFlow /></ProtectedRoute>} />
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />

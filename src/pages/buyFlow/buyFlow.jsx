@@ -81,6 +81,7 @@ export default function BuyFlow() {
   const [tier, setTier]           = useState(null);
   const [plan, setPlan]           = useState(null);
   const [slotChoice, setSlotChoice] = useState(null);
+  const [mealType, setMealType]   = useState(null);
   const [orderData, setOrderData] = useState(null);
 
   const totalSteps = 4;
@@ -95,8 +96,9 @@ export default function BuyFlow() {
       case 1:
         return (
           <Step1TierPlan
-            tier={tier} plan={plan} slotChoice={slotChoice}
+            tier={tier} plan={plan} slotChoice={slotChoice} mealType={mealType}
             onSelectTier={setTier} onSelectPlan={setPlan} onSelectSlot={setSlotChoice}
+            onSelectMealType={setMealType}
             onContinue={goNext}
           />
         );
@@ -104,7 +106,7 @@ export default function BuyFlow() {
       case 3:
         return (
           <Step3Payment
-            tier={tier} plan={plan} slotChoice={slotChoice}
+            tier={tier} plan={plan} slotChoice={slotChoice} mealType={mealType}
             onSuccess={(data) => { setOrderData(data); goNext(); }}
           />
         );

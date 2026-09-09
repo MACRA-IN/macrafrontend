@@ -16,21 +16,32 @@ const Header = () => {
   const handleLogout = () => { logoutUser(); navigate("/"); };
 
   const navLinks = [
-    { href: "/menu",     label: "Menu" },
-    { href: "/#science", label: "The science" },
-    { href: "/#plans",   label: "Plans" },
+    { href: "/menu",       label: "Menu" },
+    { href: "/#science",   label: "The science" },
+    { href: "/#plans",     label: "Plans" },
+    { href: "/calculator", label: "Price calculator" },
   ];
 
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-gray-100 bg-white/95 backdrop-blur-md">
+        <style>{`
+          @keyframes calc-wiggle {
+            0%, 85%, 100% { transform: rotate(0deg); }
+            88% { transform: rotate(-8deg); }
+            91% { transform: rotate(7deg); }
+            94% { transform: rotate(-4deg); }
+            97% { transform: rotate(0deg); }
+          }
+          .calc-wiggle { animation: calc-wiggle 4.5s ease-in-out infinite; }
+        `}</style>
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
 
           {/* Logo */}
           <img
             src={macraLogo}
             alt="Macra"
-            className="h-10 w-auto cursor-pointer sm:h-12"
+            className="h-10 w-auto shrink-0 cursor-pointer sm:h-12"
             onClick={() => navigate("/")}
           />
 
@@ -82,7 +93,14 @@ const Header = () => {
             </button>
           </div>
 
-          {/* Mobile: logo is left, nothing on right (nav is in sticky bottom bar) */}
+          {/* Mobile: logo on the left, price calculator badge on the right (nav lives in the sticky bottom bar) */}
+          <button
+            onClick={() => navigate("/calculator")}
+            className="calc-wiggle flex shrink-0 items-center gap-1 rounded-full border border-emerald/25 bg-sage/50 px-2.5 py-1 text-[11px] font-bold text-emerald-dark transition-transform hover:scale-105 active:scale-95 md:hidden"
+          >
+            <span aria-hidden="true">🧮</span>
+            Price calculator
+          </button>
         </div>
       </header>
 

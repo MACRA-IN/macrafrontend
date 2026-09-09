@@ -4,11 +4,13 @@ export const createPaymentOrder = async ({
   category_id,
   plan_id,
   slots,
+  meal_type,
 }) => {
   const res = await apiClient.post("/api/payments/create-order", {
     category_id,
     plan_id,
     slots,
+    meal_type,
   });
 
   return res.data.data;

@@ -14,6 +14,7 @@ const SLOT_TIMES = {
   both: "12–2 PM · 6–8 PM",
 };
 const PLAN_DAYS = { Trial: "4 days", Weekly: "7 days", Monthly: "30 days" };
+const MEAL_TYPE_LABELS = { salad: "Salad", rice: "Rice", both: "Salad & Rice (alternating)" };
 
 function SummaryRow({ label, value, accent }) {
   return (
@@ -26,7 +27,7 @@ function SummaryRow({ label, value, accent }) {
   );
 }
 
-export default function Step3Payment({ tier, plan, slotChoice, onSuccess }) {
+export default function Step3Payment({ tier, plan, slotChoice, mealType, onSuccess }) {
   const [pricing, setPricing] = useState(null);
   const [paying, setPaying] = useState(false);
   const [error, setError] = useState(null);
@@ -54,6 +55,7 @@ export default function Step3Payment({ tier, plan, slotChoice, onSuccess }) {
         category_id: tier.id,
         plan_id: plan.id,
         slots,
+        meal_type: mealType,
       });
 
       const options = {
@@ -143,6 +145,10 @@ export default function Step3Payment({ tier, plan, slotChoice, onSuccess }) {
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-wider text-text-muted">Meals</p>
               <p className="mt-0.5 text-sm font-medium text-forest">{SLOT_LABELS[slotChoice]}</p>
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-text-muted">Meal type</p>
+              <p className="mt-0.5 text-sm font-medium text-forest">{MEAL_TYPE_LABELS[mealType]}</p>
             </div>
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-wider text-text-muted">Delivery</p>
