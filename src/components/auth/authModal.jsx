@@ -74,7 +74,7 @@ export default function AuthModal({ onClose, onSuccess }) {
       loginUser(data.token, data.customer ?? data.user ?? { email: form.email });
       onClose(); onSuccess?.();
     } catch (err) {
-      setApiError(err?.response?.data?.message || "Registration failed. Please try again.");
+      setApiError(err?.response?.data?.error || err?.response?.data?.message || "Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }
