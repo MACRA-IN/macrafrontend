@@ -19,8 +19,9 @@ const Header = () => {
     { href: "/menu",       label: "Menu" },
     { href: "/#science",   label: "The science" },
     { href: "/#plans",     label: "Plans" },
-    { href: "/calculator", label: "Price calculator" },
   ];
+
+  const goToCalculator = () => user ? navigate("/calculator") : openAuthWithRedirect("/calculator");
 
   return (
     <>
@@ -56,6 +57,12 @@ const Header = () => {
                 {label}
               </a>
             ))}
+            <button
+              onClick={goToCalculator}
+              className="text-sm font-medium text-gray-700 transition-colors hover:text-emerald"
+            >
+              Price calculator
+            </button>
           </nav>
 
           {/* Desktop right actions */}
@@ -95,7 +102,7 @@ const Header = () => {
 
           {/* Mobile: logo on the left, price calculator badge on the right (nav lives in the sticky bottom bar) */}
           <button
-            onClick={() => navigate("/calculator")}
+            onClick={goToCalculator}
             className="calc-wiggle flex shrink-0 items-center gap-1 rounded-full border border-emerald/25 bg-sage/50 px-2.5 py-1 text-[11px] font-bold text-emerald-dark transition-transform hover:scale-105 active:scale-95 md:hidden"
           >
             <span aria-hidden="true">🧮</span>
