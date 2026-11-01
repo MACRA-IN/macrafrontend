@@ -105,6 +105,11 @@ export const verifyRenewal = async (payload) => {
   }
 };
 
+export const joinWaitlist = async () => {
+  const res = await apiClient.post("/api/subscription/waitlist");
+  return res.data;
+};
+
 export default {
   getPlans,
   calculatePrice,

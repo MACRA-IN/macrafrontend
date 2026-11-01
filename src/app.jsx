@@ -5,6 +5,7 @@ import "./index.css";
 import Home from './pages/home/home';
 import CartPage from './pages/cart/cart';
 import BuyFlow from './pages/buyFlow/buyFlow';
+import ComingSoon from './pages/orders/comingSoon';
 import Dashboard from './pages/dashboard/dashboard';
 import PriceCalculator from './pages/calculator/priceCalculator';
 import MenuPage from './components/home/menuSection';
@@ -47,7 +48,7 @@ const App = () => {
               <Route path="/menu" element={<MenuPage />} />
               <Route path="/calculator" element={<PriceCalculator />} />
               <Route path="/cart" element={<CartPage />} />
-              <Route path="/subscribe" element={<ProtectedRoute><BuyFlow /></ProtectedRoute>} />
+              <Route path="/subscribe" element={<ComingSoon />} />
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/privacy-policy"  element={<PrivacyPolicy />} />
               <Route path="/terms"           element={<TermsAndConditions />} />
